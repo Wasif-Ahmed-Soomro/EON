@@ -133,6 +133,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="easymode.c" />
     <ClCompile Include="level2.c" />
     <ClCompile Include="level3.c" />
     <ClCompile Include="level4.c" />
@@ -140,6 +141,7 @@
     <ClCompile Include="main.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="easyMode.h" />
     <ClInclude Include="level2.h" />
     <ClInclude Include="level3.h" />
     <ClInclude Include="level4.h" />

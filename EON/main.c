@@ -2,6 +2,7 @@
 #include <SDL_image.h>
 #include <stdio.h>
 #include "level2.h" // Make sure this file declares runLevel2
+#include "easyMode.h"
 
 int checkCollision(SDL_Rect a, SDL_Rect b) {
     return SDL_HasIntersection(&a, &b);
@@ -112,7 +113,7 @@ int showModeSelectionMenu(SDL_Renderer* renderer, int* startGame) {
                 SDL_GetMouseState(&x, &y);
                 if (x >= easyModeButton.x && x <= easyModeButton.x + easyModeButton.w &&
                     y >= easyModeButton.y && y <= easyModeButton.y + easyModeButton.h) {
-                    easyMode(); // Call easy mode function
+                    easyMode(renderer); // Call easy mode function
                     modeMenuRunning = 0;
                 }
                 else if (x >= startGameButton.x && x <= startGameButton.x + startGameButton.w &&
@@ -129,10 +130,7 @@ int showModeSelectionMenu(SDL_Renderer* renderer, int* startGame) {
     SDL_DestroyTexture(startGameTexture);
 }
 
-int easyMode() {
-    printf("Easy mode selected!\n");
-    // Implement easy mode game logic here
-}
+
 
 
 int main(int argc, char* argv[]) {

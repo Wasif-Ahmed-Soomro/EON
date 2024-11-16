@@ -30,6 +30,9 @@
     <ClCompile Include="level5.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="easymode.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="level2.h">
@@ -42,6 +45,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="level5.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="easyMode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
