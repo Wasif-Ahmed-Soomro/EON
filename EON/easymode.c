@@ -1,7 +1,7 @@
 #include <SDL.h>
 #include <SDL_image.h> // Include SDL_image
 #include <stdio.h>
-
+#include "easylevel2.h"
 int checkCollision(SDL_Rect a, SDL_Rect b);
 void showRestartMessage(SDL_Renderer* renderer);
 
@@ -90,6 +90,7 @@ int easyMode(SDL_Renderer* renderer) {
             else if (redBoxX2 >= 640 - redBoxSize2) redBoxDirection2 = -1;
 
             // Define the squares and red boxes as SDL_Rect objects
+            SDL_Rect finishLine = { 0, 482, 640, 119 };
             SDL_Rect redBox = { (int)redBoxX, (int)redBoxY, (int)redBoxSize, (int)redBoxSize };
             SDL_Rect redBox2 = { (int)redBoxX2, (int)redBoxY2, (int)redBoxSize2, (int)redBoxSize2 };
             SDL_Rect redBox3 = { (int)redBoxX3, (int)redBoxY3, (int)redBoxSize, (int)redBoxSize };
@@ -99,7 +100,14 @@ int easyMode(SDL_Renderer* renderer) {
             if (checkCollision(square, redBox) || checkCollision(square, redBox2) || checkCollision(square, redBox3)) {
                 gameOver = 1;
             }
-
+            if (checkCollision(square, finishLine)) {
+                int el2status = runel2(renderer);
+                if (el2status == 1) {
+                    gameOver = 1;
+                    continue;
+                }
+                break;
+            }
             // Clear the window and render the background
             SDL_RenderCopy(renderer, bgTexture, NULL, NULL);
 
