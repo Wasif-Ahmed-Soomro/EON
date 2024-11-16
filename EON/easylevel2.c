@@ -7,15 +7,16 @@ int checkCollision(SDL_Rect a, SDL_Rect b);
 int runel2(SDL_Renderer* renderer) {
     SDL_Delay(1000);
 
-    // Initialize variables for the moving gap
-    float gapX = 200.0f, gapY = 250.0f, gapSpeed = 0.08f;
+    // Initialize variables for the moving gap (obi)
+    float gapX = 200.0f, gapY = 274.0f, gapSpeed = 0.08f;
     int gapDirection = 1; // Moving right initially
-    const float gapWidth = 60.0f, redBoxHeight = 30.0f;
-    float redBoxSize = 30.0f, redBoxX = 320.0f, redBoxY = 400.0f, redBoxSpeed = 0.7f;
+    const float gapWidth = 60.0f, redBoxHeight = 50.0f;
+    float redBoxSize = 50.0f, redBoxX = 320.0f, redBoxY = 400.0f, redBoxSpeed = 0.7f;
     int redBoxDirection = -1;
 
+    // Player movement speed and initial position
     float squareSize = 50.0f;
-    float squareX = 160.0f, squareY = 100.0f; // Position for the first square
+    float squareX = 160.0f, squareY = 100.0f; // Position for the player's square
     float speed = 0.1f; // Speed of movement
 
     // Initialize SDL_image
@@ -30,6 +31,36 @@ int runel2(SDL_Renderer* renderer) {
     SDL_Texture* bgTexture = IMG_LoadTexture(renderer, "easybg.png");
     if (!bgTexture) {
         printf("Failed to load texture! IMG_Error: %s\n", IMG_GetError());
+        SDL_DestroyRenderer(renderer);
+        IMG_Quit();
+        SDL_Quit();
+        return 1;
+    }
+
+    // Load the obi (gap) image
+    SDL_Texture* obiTexture = IMG_LoadTexture(renderer, "obii.png");
+    if (!obiTexture) {
+        printf("Failed to load obi texture! IMG_Error: %s\n", IMG_GetError());
+        SDL_DestroyRenderer(renderer);
+        IMG_Quit();
+        SDL_Quit();
+        return 1;
+    }
+
+    // Load the moving spike image
+    SDL_Texture* spikeTexture = IMG_LoadTexture(renderer, "movingspike.png");
+    if (!spikeTexture) {
+        printf("Failed to load spike texture! IMG_Error: %s\n", IMG_GetError());
+        SDL_DestroyRenderer(renderer);
+        IMG_Quit();
+        SDL_Quit();
+        return 1;
+    }
+
+    // Load the player's character image
+    SDL_Texture* characterTexture = IMG_LoadTexture(renderer, "character.png");
+    if (!characterTexture) {
+        printf("Failed to load character texture! IMG_Error: %s\n", IMG_GetError());
         SDL_DestroyRenderer(renderer);
         IMG_Quit();
         SDL_Quit();
@@ -51,7 +82,7 @@ int runel2(SDL_Renderer* renderer) {
         // Get the current state of the keyboard
         const Uint8* currentKeyStates = SDL_GetKeyboardState(NULL);
 
-        // Move the first square (WASD keys)
+        // Move the square (WASD keys)
         if (currentKeyStates[SDL_SCANCODE_W] && squareY > 0) {
             squareY -= speed; // Move up
         }
@@ -64,46 +95,49 @@ int runel2(SDL_Renderer* renderer) {
         if (currentKeyStates[SDL_SCANCODE_D] && squareX < 640 - squareSize) {
             squareX += speed; // Move right
         }
+
+        // Update the red box (spike) position
         redBoxX += redBoxDirection * redBoxSpeed;
         if (redBoxX <= 0) redBoxDirection = 1;
         else if (redBoxX >= 640 - redBoxSize) redBoxDirection = -1;
+
         // Update the gap position
         gapX += gapDirection * gapSpeed;
         if (gapX <= 0) gapDirection = 1;
         else if (gapX >= 640 - gapWidth) gapDirection = -1;
 
-        // Define rectangles for the red box and the gap
-        SDL_Rect redBox1 = { (int)redBoxX, (int)redBoxY, (int)redBoxSize, (int)redBoxSize };
-        SDL_Rect redBox = { 0, (int)gapY, 640, (int)redBoxHeight };
+        // Define rectangles for the moving spike (red box) and the gap
+        SDL_Rect spikeRect = { (int)redBoxX, (int)redBoxY, (int)redBoxSize, (int)redBoxSize };
+        SDL_Rect redBox = { 0, 274, 640, (int)redBoxHeight };
         SDL_Rect gap = { (int)gapX, (int)gapY, (int)gapWidth, (int)redBoxHeight };
-        SDL_Rect square = { (int)squareX, (int)squareY, (int)squareSize, (int)squareSize };
+        SDL_Rect playerRect = { (int)squareX, (int)squareY, (int)squareSize, (int)squareSize };
 
         // Check for collisions (player must not collide with the red box unless within the gap)
-        if (checkCollision(square, redBox) && !checkCollision(square, gap)) {
-            return 1; // Player collided with the red box
+        if (checkCollision(playerRect, redBox) && !checkCollision(playerRect, gap)) {
+            return 1; // Player collided with the red box (spike)
         }
 
         // Render the background
         SDL_RenderCopy(renderer, bgTexture, NULL, NULL);
 
-        // Draw the red box
-        SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255); // Red color
-        SDL_RenderFillRect(renderer, &redBox);
-        SDL_RenderFillRect(renderer, &redBox1);
+        // Draw the moving spike image
+        SDL_RenderCopy(renderer, spikeTexture, NULL, &spikeRect); // Draw the moving spike
 
-        // Draw the gap (overwrite red box with background color)
-        SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255); // Black color (gap is transparent)
-        SDL_RenderFillRect(renderer, &gap);
+        // Draw the gap (obi image)
+        SDL_RenderCopy(renderer, obiTexture, NULL, &gap); // Draw the obi image for the gap
 
-        // Draw the player's square
-        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255); // White color
-        SDL_RenderFillRect(renderer, &square);
+        // Draw the player's character (replace square with character image)
+        SDL_RenderCopy(renderer, characterTexture, NULL, &playerRect); // Draw the character as a texture
 
+        // Present the rendered frame
         SDL_RenderPresent(renderer);
     }
 
     // Clean up resources
     SDL_DestroyTexture(bgTexture);
+    SDL_DestroyTexture(obiTexture); // Destroy the obi texture
+    SDL_DestroyTexture(spikeTexture); // Destroy the moving spike texture
+    SDL_DestroyTexture(characterTexture); // Destroy the character texture
     IMG_Quit();
     return 0;
 }
