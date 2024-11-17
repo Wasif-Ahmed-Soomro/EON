@@ -36,6 +36,12 @@
     <ClCompile Include="easylevel2.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="easylevel3.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="easylevel4.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="level2.h">
@@ -54,6 +60,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="easylevel2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="easylevel3.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="easylevel4.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

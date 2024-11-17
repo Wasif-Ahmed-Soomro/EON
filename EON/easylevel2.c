@@ -1,6 +1,7 @@
 #include <SDL.h>
 #include <SDL_image.h> // Include SDL_image
 #include <stdio.h>
+#include "easylevel3.h"
 
 int checkCollision(SDL_Rect a, SDL_Rect b);
 
@@ -107,27 +108,34 @@ int runel2(SDL_Renderer* renderer) {
         else if (gapX >= 640 - gapWidth) gapDirection = -1;
 
         // Define rectangles for the moving spike (red box) and the gap
-        SDL_Rect spikeRect = { (int)redBoxX, (int)redBoxY, (int)redBoxSize, (int)redBoxSize };
+        SDL_Rect finishline = { 0, 482, 640, 119 };
+        SDL_Rect spike = { (int)redBoxX, (int)redBoxY, (int)redBoxSize, (int)redBoxSize };
         SDL_Rect redBox = { 0, 274, 640, (int)redBoxHeight };
         SDL_Rect gap = { (int)gapX, (int)gapY, (int)gapWidth, (int)redBoxHeight };
-        SDL_Rect playerRect = { (int)squareX, (int)squareY, (int)squareSize, (int)squareSize };
+        SDL_Rect character = { (int)squareX, (int)squareY, (int)squareSize, (int)squareSize };
 
         // Check for collisions (player must not collide with the red box unless within the gap)
-        if (checkCollision(playerRect, redBox) && !checkCollision(playerRect, gap)) {
+        if (checkCollision(character, redBox)  && !checkCollision(character, gap) || checkCollision(character,spike)) {
             return 1; // Player collided with the red box (spike)
+        }
+        if (checkCollision(character, finishline)) {
+            int el3status = runel3(renderer);  // Run level 2 and check for collision
+            if (el3status == 1) {
+                return 1;
+            }
         }
 
         // Render the background
         SDL_RenderCopy(renderer, bgTexture, NULL, NULL);
 
         // Draw the moving spike image
-        SDL_RenderCopy(renderer, spikeTexture, NULL, &spikeRect); // Draw the moving spike
+        SDL_RenderCopy(renderer, spikeTexture, NULL, &spike); // Draw the moving spike
 
         // Draw the gap (obi image)
         SDL_RenderCopy(renderer, obiTexture, NULL, &gap); // Draw the obi image for the gap
 
         // Draw the player's character (replace square with character image)
-        SDL_RenderCopy(renderer, characterTexture, NULL, &playerRect); // Draw the character as a texture
+        SDL_RenderCopy(renderer, characterTexture, NULL, &character); // Draw the character as a texture
 
         // Present the rendered frame
         SDL_RenderPresent(renderer);

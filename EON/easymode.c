@@ -126,7 +126,7 @@ int easyMode(SDL_Renderer* renderer) {
                 gameOver = 1;
             }
             if (checkCollision(character, finishLine)) {
-                int el2status = runel2(renderer);
+                int el2status = runel4(renderer);
                 if (el2status == 1) {
                     gameOver = 1;
                     continue;
