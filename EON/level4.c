@@ -93,7 +93,7 @@ int runLevel4(SDL_Renderer* renderer) {
 
         // Update blinking timer and toggle visibility
         blinkTimer++;
-        if (blinkTimer >= 3000) { // Toggle every 1000 frames
+        if (blinkTimer >= 3000) { // Toggle every 3000 frames
             showRedBox = !showRedBox;
             blinkTimer = 0;
         }

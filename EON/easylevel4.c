@@ -1,6 +1,7 @@
 #include <SDL.h>
 #include <SDL_image.h> // Include SDL_image
 #include <stdio.h>
+#include "easylevel5.h"
 #include <math.h> // For sin and cos functions
 
 int checkCollision(SDL_Rect a, SDL_Rect b);
@@ -12,17 +13,18 @@ int runel4(SDL_Renderer* renderer) {
     int centerY = 400;
 
     // Spike variables
-    float spikeRadius = 50.0; // Distance from the center
-    float spikeSpeed = 0.002f; // Speed of rotation (radians per frame)
-    int spikeSize = 50; // Size of each spike
+    float spikeRadius = 30.0f; // Distance from the center
+    float spikeSpeed = 0.002f;  // Speed of rotation (radians per frame)
+    int spikeSize = 50;        // Size of each spike
 
     // Initial angles for each spike
-    float spike1Angle = 0.0f;      // Spike 1
+    float spike1Angle = 0.0f; // Spike 1
 
     // Player movement speed and initial position
     float squareSize = 50.0f;
     float squareX = 160.0f, squareY = 100.0f; // Position for the player's square
-    float speed = 0.1f; // Speed of movement
+    float speed = 0.1f;  // Speed of movement
+
 
     // Initialize SDL_image
     if (!(IMG_Init(IMG_INIT_PNG | IMG_INIT_JPG | IMG_INIT_TIF))) {
@@ -63,7 +65,7 @@ int runel4(SDL_Renderer* renderer) {
     }
 
     // Load the laser image
-    SDL_Texture* laserTexture = IMG_LoadTexture(renderer, "laser.png");
+    SDL_Texture* laserTexture = IMG_LoadTexture(renderer, "laserlevel4.png");
     if (!laserTexture) {
         printf("Failed to load laser texture! IMG_Error: %s\n", IMG_GetError());
         SDL_DestroyRenderer(renderer);
@@ -83,12 +85,9 @@ int runel4(SDL_Renderer* renderer) {
     }
 
     // Blinking spike variables
-    int blinkCounter = 0; // Counter for blinking
-    int blinkFrequency = 1000; // Frames between visibility toggles
+    int blinkCounter = 0;   // Counter for blinking
+    int blinkvisible = 1;
 
-    // Define rectangles for blinking spikes
-    SDL_Rect blinkSpike1 = { 600, 240, 30, 30 };
-    SDL_Rect blinkSpike2 = { 180, 290, 30, 30 };
 
     // Set up the game state for level 3
     int running = 1;
@@ -125,25 +124,39 @@ int runel4(SDL_Renderer* renderer) {
         spike1Angle += spikeSpeed; // Increment angle for circular motion
 
         // Increment blink counter
-        blinkCounter++;
-        int blinkVisible = (blinkCounter / blinkFrequency) % 2; // Toggles visibility every `blinkFrequency` frames
+        blinkCounter++; // Increment blink counter
+        if (blinkCounter >= 5000) {
+            blinkvisible = !blinkvisible;  // Toggle visibility (blink)
+            blinkCounter = 0;  // Reset counter
+        }
 
         // Define rectangles for all spikes and finishline
         SDL_Rect finishline = { 0, 482, 640, 119 };
         SDL_Rect spike1Rect = { (int)spike1X, (int)spike1Y, spikeSize, spikeSize };
+        // Define rectangles for blinking spikes
+        SDL_Rect blinkSpike1 = { 600, 240, 30, 30 };
+        SDL_Rect blinkSpike2 = { 180, 290, 30, 30 };
 
         // Define rectangles for lasers
-        SDL_Rect laser1 = { 0, 250, 600, 20 };
+        SDL_Rect laser1 = { 0, 250, 580, 20 };
         SDL_Rect laser2 = { 180, 340, 460, 20 };
 
         // Define rectangle for the player's character
         SDL_Rect character = { (int)squareX, (int)squareY, (int)squareSize, (int)squareSize };
 
-        // Check for collisions with any spike
+        // Collision detection
         if (checkCollision(character, spike1Rect) ||
-            (blinkVisible && (checkCollision(character, blinkSpike1) || checkCollision(character, blinkSpike2))) ||
             checkCollision(character, laser1) || checkCollision(character, laser2)) {
-            return 1; // Player collided with one of the spikes
+            return 1; // Player collided with one of the obstacles
+        }
+        if (blinkvisible && (checkCollision(character, blinkSpike1) || checkCollision(character, blinkSpike2))) {
+            return 1;
+        }
+        if (checkCollision(character, finishline)) {
+            int el5status = runel5(renderer);  // Run level 5 and check for collision
+            if (el5status == 1) {
+                return 1;
+            }
         }
 
         // Render the background
@@ -157,7 +170,7 @@ int runel4(SDL_Renderer* renderer) {
         SDL_RenderCopyEx(renderer, spikeTexture, NULL, &spike1Rect, spike1Angle * 180 / M_PI, NULL, SDL_FLIP_NONE);
 
         // Render the blinking spikes
-        if (blinkVisible) {
+        if (blinkvisible) {
             SDL_RenderCopy(renderer, blinkSpikeTexture, NULL, &blinkSpike1);
             SDL_RenderCopy(renderer, blinkSpikeTexture, NULL, &blinkSpike2);
         }
