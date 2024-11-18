@@ -37,15 +37,40 @@ void showMainMenu(SDL_Renderer* renderer, int* play) {
         return;
     }
 
+    // Original button sizes
     SDL_Rect playButton = { 220, 180, 250, 100 };
     SDL_Rect quitButton = { 220, 320, 250, 100 };
     SDL_Rect bgRect = { 0, 0, 640, 600 };
 
+    // Enlarged versions of buttons for hover effect
+    SDL_Rect enlargedPlayButton = { playButton.x - 10, playButton.y - 5, playButton.w + 20, playButton.h + 10 };
+    SDL_Rect enlargedQuitButton = { quitButton.x - 10, quitButton.y - 5, quitButton.w + 20, quitButton.h + 10 };
+
     while (menuRunning) {
         SDL_RenderClear(renderer);
         SDL_RenderCopy(renderer, bgTexture, NULL, &bgRect);
-        SDL_RenderCopy(renderer, playTexture, NULL, &playButton);
-        SDL_RenderCopy(renderer, quitTexture, NULL, &quitButton);
+
+        int x, y;
+        SDL_GetMouseState(&x, &y);
+
+        // Check if mouse is hovering over the play button and render the enlarged version if it is
+        if (x >= playButton.x && x <= playButton.x + playButton.w &&
+            y >= playButton.y && y <= playButton.y + playButton.h) {
+            SDL_RenderCopy(renderer, playTexture, NULL, &enlargedPlayButton); // Render enlarged play button
+        }
+        else {
+            SDL_RenderCopy(renderer, playTexture, NULL, &playButton); // Render normal play button
+        }
+
+        // Check if mouse is hovering over the quit button and render the enlarged version if it is
+        if (x >= quitButton.x && x <= quitButton.x + quitButton.w &&
+            y >= quitButton.y && y <= quitButton.y + quitButton.h) {
+            SDL_RenderCopy(renderer, quitTexture, NULL, &enlargedQuitButton); // Render enlarged quit button
+        }
+        else {
+            SDL_RenderCopy(renderer, quitTexture, NULL, &quitButton); // Render normal quit button
+        }
+
         SDL_RenderPresent(renderer);
 
         while (SDL_PollEvent(&event)) {
@@ -54,7 +79,6 @@ void showMainMenu(SDL_Renderer* renderer, int* play) {
                 menuRunning = 0;
             }
             else if (event.type == SDL_MOUSEBUTTONDOWN) {
-                int x, y;
                 SDL_GetMouseState(&x, &y);
                 if (x >= playButton.x && x <= playButton.x + playButton.w &&
                     y >= playButton.y && y <= playButton.y + playButton.h) {
@@ -75,13 +99,14 @@ void showMainMenu(SDL_Renderer* renderer, int* play) {
     SDL_DestroyTexture(quitTexture);
 }
 
+
 int showModeSelectionMenu(SDL_Renderer* renderer, int* startGame) {
     SDL_Event event;
     int modeMenuRunning = 1;
 
     SDL_Texture* bgTexture = IMG_LoadTexture(renderer, "mainmenubg2.png");
-    SDL_Texture* easyModeTexture = IMG_LoadTexture(renderer, "easy.png"); // Placeholder for easy mode button
-    SDL_Texture* startGameTexture = IMG_LoadTexture(renderer, "hard.png"); // Placeholder for start game button
+    SDL_Texture* easyModeTexture = IMG_LoadTexture(renderer, "easy.png");
+    SDL_Texture* startGameTexture = IMG_LoadTexture(renderer, "hard.png");
 
     if (!bgTexture || !easyModeTexture || !startGameTexture) {
         printf("Failed to load textures! IMG_Error: %s\n", IMG_GetError());
@@ -89,18 +114,43 @@ int showModeSelectionMenu(SDL_Renderer* renderer, int* startGame) {
         if (bgTexture) SDL_DestroyTexture(bgTexture);
         if (easyModeTexture) SDL_DestroyTexture(easyModeTexture);
         if (startGameTexture) SDL_DestroyTexture(startGameTexture);
-        return;
+        return 0;
     }
 
+    // Original button sizes
     SDL_Rect easyModeButton = { 220, 180, 250, 100 };
     SDL_Rect startGameButton = { 220, 320, 250, 100 };
     SDL_Rect bgRect = { 0, 0, 640, 600 };
 
+    // Enlarged versions of buttons for hover effect
+    SDL_Rect enlargedEasyModeButton = { easyModeButton.x - 10, easyModeButton.y - 5, easyModeButton.w + 20, easyModeButton.h + 10 };
+    SDL_Rect enlargedStartGameButton = { startGameButton.x - 10, startGameButton.y - 5, startGameButton.w + 20, startGameButton.h + 10 };
+
     while (modeMenuRunning) {
         SDL_RenderClear(renderer);
         SDL_RenderCopy(renderer, bgTexture, NULL, &bgRect);
-        SDL_RenderCopy(renderer, easyModeTexture, NULL, &easyModeButton);
-        SDL_RenderCopy(renderer, startGameTexture, NULL, &startGameButton);
+
+        int x, y;
+        SDL_GetMouseState(&x, &y);
+
+        // Check if mouse is hovering over the easy mode button and render the enlarged version if it is
+        if (x >= easyModeButton.x && x <= easyModeButton.x + easyModeButton.w &&
+            y >= easyModeButton.y && y <= easyModeButton.y + easyModeButton.h) {
+            SDL_RenderCopy(renderer, easyModeTexture, NULL, &enlargedEasyModeButton); // Render enlarged easy mode button
+        }
+        else {
+            SDL_RenderCopy(renderer, easyModeTexture, NULL, &easyModeButton); // Render normal easy mode button
+        }
+
+        // Check if mouse is hovering over the start game button and render the enlarged version if it is
+        if (x >= startGameButton.x && x <= startGameButton.x + startGameButton.w &&
+            y >= startGameButton.y && y <= startGameButton.y + startGameButton.h) {
+            SDL_RenderCopy(renderer, startGameTexture, NULL, &enlargedStartGameButton); // Render enlarged start game button
+        }
+        else {
+            SDL_RenderCopy(renderer, startGameTexture, NULL, &startGameButton); // Render normal start game button
+        }
+
         SDL_RenderPresent(renderer);
 
         while (SDL_PollEvent(&event)) {
@@ -109,7 +159,6 @@ int showModeSelectionMenu(SDL_Renderer* renderer, int* startGame) {
                 modeMenuRunning = 0;
             }
             else if (event.type == SDL_MOUSEBUTTONDOWN) {
-                int x, y;
                 SDL_GetMouseState(&x, &y);
                 if (x >= easyModeButton.x && x <= easyModeButton.x + easyModeButton.w &&
                     y >= easyModeButton.y && y <= easyModeButton.y + easyModeButton.h) {
@@ -128,7 +177,9 @@ int showModeSelectionMenu(SDL_Renderer* renderer, int* startGame) {
     SDL_DestroyTexture(bgTexture);
     SDL_DestroyTexture(easyModeTexture);
     SDL_DestroyTexture(startGameTexture);
+    return 0;
 }
+
 
 
 
