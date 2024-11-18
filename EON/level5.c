@@ -1,6 +1,7 @@
 
 #include <SDL.h>
 #include <stdio.h>
+#include <SDL_image.h> 
 #include <math.h>
 
 #define MAX_PROJECTILES 10 // Maximum number of active projectiles
@@ -21,7 +22,7 @@ int runLevel5(SDL_Renderer* renderer) {
     Uint32 startTime = SDL_GetTicks();
 
     // Red box position and size
-    float redBoxSize = 30.0f;
+    float redBoxSize = 50.0f;
     float redBoxX = 0.0f, redBoxY = 0.0f, redboxspeed = 0.1f;
     int redboxdirection = 1;
 
@@ -58,6 +59,26 @@ int runLevel5(SDL_Renderer* renderer) {
         SDL_Quit();
         return -1;
     }
+    // Load character image (single static image)
+    SDL_Texture* characterTexture = IMG_LoadTexture(renderer, "character.png");
+    if (!characterTexture) {
+        printf("Failed to load character image! IMG_Error: %s\n", IMG_GetError());
+        SDL_DestroyRenderer(renderer);
+        SDL_Quit();
+        return 1;
+    }
+
+    // Load the turret texture
+    SDL_Texture* turret = IMG_LoadTexture(renderer, "turret.png");
+    if (!turret) {
+        printf("Failed to load spike image! IMG_Error: %s\n", IMG_GetError());
+        SDL_DestroyRenderer(renderer);
+        SDL_Quit();
+        return 1;
+    }
+
+    SDL_Texture* bulletTexture = IMG_LoadTexture(renderer, "bullet.png");
+    SDL_Texture* laser = IMG_LoadTexture(renderer, "laser.png");
 
     int running = 1;
     SDL_Event event;
@@ -140,7 +161,7 @@ int runLevel5(SDL_Renderer* renderer) {
                 projectiles[i].x += projectiles[i].dirX * projectileSpeed;
                 projectiles[i].y += projectiles[i].dirY * projectileSpeed;
 
-                SDL_Rect projectileRect = { (int)projectiles[i].x, (int)projectiles[i].y, 10, 10 };
+                SDL_Rect projectileRect = { (int)projectiles[i].x, (int)projectiles[i].y, 20, 20 };
 
                 // Check if projectile collides with either square
                 if (checkCollision(square, projectileRect) || checkCollision(square2, projectileRect)) {
@@ -170,26 +191,25 @@ int runLevel5(SDL_Renderer* renderer) {
         // Render background and game objects
         SDL_RenderCopy(renderer, bgTexture, NULL, NULL);
 
-        // Draw squares
-        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-        SDL_RenderFillRect(renderer, &square);
-        SDL_RenderFillRect(renderer, &square2);
+        // Draw the player's square
+        SDL_RenderCopy(renderer, characterTexture, NULL, &square);
+        SDL_RenderCopy(renderer, characterTexture, NULL, &square2);
 
-        // Draw the red box
-        SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-        SDL_RenderFillRect(renderer, &redBox);
+        SDL_RenderCopy(renderer, turret, NULL, &redBox);
+
+
 
         // Draw redbox2 if still visible
         if (redbox2Visible) {
-            SDL_RenderFillRect(renderer, &redbox2);
+            SDL_RenderCopy(renderer, laser, NULL, &redbox2);
         }
 
         // Draw active projectiles
         SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
         for (int i = 0; i < MAX_PROJECTILES; i++) {
             if (projectiles[i].active) {
-                SDL_Rect projectileRect = { (int)projectiles[i].x, (int)projectiles[i].y, 10, 10 };
-                SDL_RenderFillRect(renderer, &projectileRect);
+                SDL_Rect projectileRect = { (int)projectiles[i].x, (int)projectiles[i].y, 13, 13 };
+                SDL_RenderCopy(renderer, bulletTexture, NULL, &projectileRect);
             }
         }
 
@@ -198,4 +218,9 @@ int runLevel5(SDL_Renderer* renderer) {
 
     // Clean up resources
     SDL_DestroyTexture(bgTexture);
+    SDL_DestroyTexture(turret);
+    SDL_DestroyTexture(characterTexture);
+    SDL_DestroyTexture(bulletTexture);
+    SDL_DestroyTexture(laser);
+    IMG_Quit();
 }

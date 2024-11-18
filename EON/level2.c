@@ -45,6 +45,24 @@ int runLevel2(SDL_Renderer* renderer) {
         return; // No need to return 1
     }
 
+    // Load character image (single static image)
+    SDL_Texture* characterTexture = IMG_LoadTexture(renderer, "character.png");
+    if (!characterTexture) {
+        printf("Failed to load character image! IMG_Error: %s\n", IMG_GetError());
+        SDL_DestroyRenderer(renderer);
+        SDL_Quit();
+        return 1;
+    }
+
+    // Load the spike texture
+    SDL_Texture* spikeTexture = IMG_LoadTexture(renderer, "movingspike.png");
+    if (!spikeTexture) {
+        printf("Failed to load spike image! IMG_Error: %s\n", IMG_GetError());
+        SDL_DestroyRenderer(renderer);
+        SDL_Quit();
+        return 1;
+    }
+
     // Set up the game state for level 2
     int running = 1;
     SDL_Event event;
@@ -137,16 +155,14 @@ int runLevel2(SDL_Renderer* renderer) {
 
 
 
-        // Draw squares
-        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255); // White color for squares
-        SDL_RenderFillRect(renderer, &square);
-        SDL_RenderFillRect(renderer, &square2);
+        // Draw the character (use the single static character image)
+        SDL_RenderCopy(renderer, characterTexture, NULL, &square);
+        SDL_RenderCopy(renderer, characterTexture, NULL, &square2);
 
-        // Draw the red boxes
-        SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-        SDL_RenderFillRect(renderer, &redBox);
-        SDL_RenderFillRect(renderer, &redBox2);
-        SDL_RenderFillRect(renderer, &redBox3);
+        SDL_RenderCopy(renderer, spikeTexture, NULL, &redBox);
+        SDL_RenderCopy(renderer, spikeTexture, NULL, &redBox2);
+        SDL_RenderCopy(renderer, spikeTexture, NULL, &redBox3);
+
 
 
 
@@ -157,6 +173,8 @@ int runLevel2(SDL_Renderer* renderer) {
     }
 
     // Clean up resources
+    SDL_DestroyTexture(spikeTexture);
+    SDL_DestroyTexture(characterTexture);
     SDL_DestroyTexture(bgTexture);
     IMG_Quit();
 }

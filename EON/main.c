@@ -1,6 +1,9 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #include <stdio.h>
+#include <libavformat/avformat.h>
+#include <libavcodec/avcodec.h>
+#include <libswscale/swscale.h>
 #include "level2.h" // Make sure this file declares runLevel2
 #include "easyMode.h"
 
@@ -18,6 +21,393 @@ void showRestartMessage(SDL_Renderer* renderer) {
 
     SDL_RenderPresent(renderer);
 }
+void playIntroVideo(SDL_Renderer* renderer) {
+    // Initialize FFmpeg
+    avformat_network_init();
+    AVFormatContext* formatContext = NULL;
+
+    if (avformat_open_input(&formatContext, "INTRO.mp4", NULL, NULL) != 0) {
+        printf("Could not open video file\n");
+        return;
+    }
+
+    if (avformat_find_stream_info(formatContext, NULL) < 0) {
+        printf("Could not find stream information\n");
+        avformat_close_input(&formatContext);
+        return;
+    }
+
+    int videoStreamIndex = -1;
+    for (int i = 0; i < formatContext->nb_streams; i++) {
+        if (formatContext->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO) {
+            videoStreamIndex = i;
+            break;
+        }
+    }
+
+    if (videoStreamIndex == -1) {
+        printf("No video stream found\n");
+        avformat_close_input(&formatContext);
+        return;
+    }
+
+    AVCodecContext* codecContext = avcodec_alloc_context3(NULL);
+    if (!codecContext) {
+        printf("Failed to allocate codec context\n");
+        avformat_close_input(&formatContext);
+        return;
+    }
+
+    avcodec_parameters_to_context(codecContext, formatContext->streams[videoStreamIndex]->codecpar);
+
+    AVCodec* codec = avcodec_find_decoder(codecContext->codec_id);
+    if (codec == NULL) {
+        printf("Codec not found\n");
+        avcodec_free_context(&codecContext);
+        avformat_close_input(&formatContext);
+        return;
+    }
+
+    if (avcodec_open2(codecContext, codec, NULL) < 0) {
+        printf("Failed to open codec\n");
+        avcodec_free_context(&codecContext);
+        avformat_close_input(&formatContext);
+        return;
+    }
+
+    AVPacket packet;
+    AVFrame* frame = av_frame_alloc();
+    AVFrame* rgbFrame = av_frame_alloc();
+    if (!frame || !rgbFrame) {
+        printf("Failed to allocate frames\n");
+        avcodec_free_context(&codecContext);
+        avformat_close_input(&formatContext);
+        return;
+    }
+
+    int numBytes = av_image_get_buffer_size(AV_PIX_FMT_RGB24, codecContext->width, codecContext->height, 1);
+    uint8_t* buffer = (uint8_t*)av_malloc(numBytes * sizeof(uint8_t));
+    if (!buffer) {
+        printf("Failed to allocate buffer\n");
+        av_frame_free(&frame);
+        av_frame_free(&rgbFrame);
+        avcodec_free_context(&codecContext);
+        avformat_close_input(&formatContext);
+        return;
+    }
+
+    av_image_fill_arrays(rgbFrame->data, rgbFrame->linesize, buffer, AV_PIX_FMT_RGB24,
+        codecContext->width, codecContext->height, 1);
+
+    struct SwsContext* swsContext = sws_getContext(codecContext->width, codecContext->height, codecContext->pix_fmt,
+        codecContext->width, codecContext->height, AV_PIX_FMT_RGB24,
+        SWS_BILINEAR, NULL, NULL, NULL);
+    if (!swsContext) {
+        printf("Failed to create swsContext\n");
+        av_freep(&buffer);
+        av_frame_free(&frame);
+        av_frame_free(&rgbFrame);
+        avcodec_free_context(&codecContext);
+        avformat_close_input(&formatContext);
+        return;
+    }
+
+    while (av_read_frame(formatContext, &packet) >= 0) {
+        if (packet.stream_index == videoStreamIndex) {
+            if (avcodec_send_packet(codecContext, &packet) == 0) {
+                while (avcodec_receive_frame(codecContext, frame) == 0) {
+                    sws_scale(swsContext, frame->data, frame->linesize, 0, codecContext->height,
+                        rgbFrame->data, rgbFrame->linesize);
+
+                    SDL_Texture* texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGB24,
+                        SDL_TEXTUREACCESS_STREAMING,
+                        codecContext->width, codecContext->height);
+                    if (!texture) {
+                        printf("Failed to create SDL texture: %s\n", SDL_GetError());
+                        continue; // Proceed with next frame
+                    }
+
+                    SDL_UpdateTexture(texture, NULL, rgbFrame->data[0], rgbFrame->linesize[0]);
+
+                    SDL_RenderClear(renderer);
+                    SDL_RenderCopy(renderer, texture, NULL, NULL);
+                    SDL_RenderPresent(renderer);
+
+                    SDL_DestroyTexture(texture);
+                    SDL_Delay(40);  // Adjust delay to match frame rate (frame rate is typically around 25-30 fps for videos)
+                }
+            }
+        }
+        av_packet_unref(&packet);
+    }
+
+    // Cleanup
+    sws_freeContext(swsContext);
+    av_freep(&buffer);
+    av_frame_free(&frame);
+    av_frame_free(&rgbFrame);
+    avcodec_free_context(&codecContext);
+    avformat_close_input(&formatContext);
+}
+
+void playcutscenehard(SDL_Renderer* renderer) {
+    // Initialize FFmpeg
+    avformat_network_init();
+    AVFormatContext* formatContext = NULL;
+
+    if (avformat_open_input(&formatContext, "cutscenehard.mp4", NULL, NULL) != 0) {
+        printf("Could not open video file\n");
+        return;
+    }
+
+    if (avformat_find_stream_info(formatContext, NULL) < 0) {
+        printf("Could not find stream information\n");
+        avformat_close_input(&formatContext);
+        return;
+    }
+
+    int videoStreamIndex = -1;
+    for (int i = 0; i < formatContext->nb_streams; i++) {
+        if (formatContext->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO) {
+            videoStreamIndex = i;
+            break;
+        }
+    }
+
+    if (videoStreamIndex == -1) {
+        printf("No video stream found\n");
+        avformat_close_input(&formatContext);
+        return;
+    }
+
+    AVCodecContext* codecContext = avcodec_alloc_context3(NULL);
+    if (!codecContext) {
+        printf("Failed to allocate codec context\n");
+        avformat_close_input(&formatContext);
+        return;
+    }
+
+    avcodec_parameters_to_context(codecContext, formatContext->streams[videoStreamIndex]->codecpar);
+
+    AVCodec* codec = avcodec_find_decoder(codecContext->codec_id);
+    if (codec == NULL) {
+        printf("Codec not found\n");
+        avcodec_free_context(&codecContext);
+        avformat_close_input(&formatContext);
+        return;
+    }
+
+    if (avcodec_open2(codecContext, codec, NULL) < 0) {
+        printf("Failed to open codec\n");
+        avcodec_free_context(&codecContext);
+        avformat_close_input(&formatContext);
+        return;
+    }
+
+    AVPacket packet;
+    AVFrame* frame = av_frame_alloc();
+    AVFrame* rgbFrame = av_frame_alloc();
+    if (!frame || !rgbFrame) {
+        printf("Failed to allocate frames\n");
+        avcodec_free_context(&codecContext);
+        avformat_close_input(&formatContext);
+        return;
+    }
+
+    int numBytes = av_image_get_buffer_size(AV_PIX_FMT_RGB24, codecContext->width, codecContext->height, 1);
+    uint8_t* buffer = (uint8_t*)av_malloc(numBytes * sizeof(uint8_t));
+    if (!buffer) {
+        printf("Failed to allocate buffer\n");
+        av_frame_free(&frame);
+        av_frame_free(&rgbFrame);
+        avcodec_free_context(&codecContext);
+        avformat_close_input(&formatContext);
+        return;
+    }
+
+    av_image_fill_arrays(rgbFrame->data, rgbFrame->linesize, buffer, AV_PIX_FMT_RGB24,
+        codecContext->width, codecContext->height, 1);
+
+    struct SwsContext* swsContext = sws_getContext(codecContext->width, codecContext->height, codecContext->pix_fmt,
+        codecContext->width, codecContext->height, AV_PIX_FMT_RGB24,
+        SWS_BILINEAR, NULL, NULL, NULL);
+    if (!swsContext) {
+        printf("Failed to create swsContext\n");
+        av_freep(&buffer);
+        av_frame_free(&frame);
+        av_frame_free(&rgbFrame);
+        avcodec_free_context(&codecContext);
+        avformat_close_input(&formatContext);
+        return;
+    }
+
+    while (av_read_frame(formatContext, &packet) >= 0) {
+        if (packet.stream_index == videoStreamIndex) {
+            if (avcodec_send_packet(codecContext, &packet) == 0) {
+                while (avcodec_receive_frame(codecContext, frame) == 0) {
+                    sws_scale(swsContext, frame->data, frame->linesize, 0, codecContext->height,
+                        rgbFrame->data, rgbFrame->linesize);
+
+                    SDL_Texture* texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGB24,
+                        SDL_TEXTUREACCESS_STREAMING,
+                        codecContext->width, codecContext->height);
+                    if (!texture) {
+                        printf("Failed to create SDL texture: %s\n", SDL_GetError());
+                        continue; // Proceed with next frame
+                    }
+
+                    SDL_UpdateTexture(texture, NULL, rgbFrame->data[0], rgbFrame->linesize[0]);
+
+                    SDL_RenderClear(renderer);
+                    SDL_RenderCopy(renderer, texture, NULL, NULL);
+                    SDL_RenderPresent(renderer);
+
+                    SDL_DestroyTexture(texture);
+                    SDL_Delay(40);  // Adjust delay to match frame rate (frame rate is typically around 25-30 fps for videos)
+                }
+            }
+        }
+        av_packet_unref(&packet);
+    }
+
+    // Cleanup
+    sws_freeContext(swsContext);
+    av_freep(&buffer);
+    av_frame_free(&frame);
+    av_frame_free(&rgbFrame);
+    avcodec_free_context(&codecContext);
+    avformat_close_input(&formatContext);
+}
+void playcutsceneez(SDL_Renderer* renderer) {
+    // Initialize FFmpeg
+    avformat_network_init();
+    AVFormatContext* formatContext = NULL;
+
+    if (avformat_open_input(&formatContext, "cutsceneez.mp4", NULL, NULL) != 0) {
+        printf("Could not open video file\n");
+        return;
+    }
+
+    if (avformat_find_stream_info(formatContext, NULL) < 0) {
+        printf("Could not find stream information\n");
+        avformat_close_input(&formatContext);
+        return;
+    }
+
+    int videoStreamIndex = -1;
+    for (int i = 0; i < formatContext->nb_streams; i++) {
+        if (formatContext->streams[i]->codecpar->codec_type == AVMEDIA_TYPE_VIDEO) {
+            videoStreamIndex = i;
+            break;
+        }
+    }
+
+    if (videoStreamIndex == -1) {
+        printf("No video stream found\n");
+        avformat_close_input(&formatContext);
+        return;
+    }
+
+    AVCodecContext* codecContext = avcodec_alloc_context3(NULL);
+    if (!codecContext) {
+        printf("Failed to allocate codec context\n");
+        avformat_close_input(&formatContext);
+        return;
+    }
+
+    avcodec_parameters_to_context(codecContext, formatContext->streams[videoStreamIndex]->codecpar);
+
+    AVCodec* codec = avcodec_find_decoder(codecContext->codec_id);
+    if (codec == NULL) {
+        printf("Codec not found\n");
+        avcodec_free_context(&codecContext);
+        avformat_close_input(&formatContext);
+        return;
+    }
+
+    if (avcodec_open2(codecContext, codec, NULL) < 0) {
+        printf("Failed to open codec\n");
+        avcodec_free_context(&codecContext);
+        avformat_close_input(&formatContext);
+        return;
+    }
+
+    AVPacket packet;
+    AVFrame* frame = av_frame_alloc();
+    AVFrame* rgbFrame = av_frame_alloc();
+    if (!frame || !rgbFrame) {
+        printf("Failed to allocate frames\n");
+        avcodec_free_context(&codecContext);
+        avformat_close_input(&formatContext);
+        return;
+    }
+
+    int numBytes = av_image_get_buffer_size(AV_PIX_FMT_RGB24, codecContext->width, codecContext->height, 1);
+    uint8_t* buffer = (uint8_t*)av_malloc(numBytes * sizeof(uint8_t));
+    if (!buffer) {
+        printf("Failed to allocate buffer\n");
+        av_frame_free(&frame);
+        av_frame_free(&rgbFrame);
+        avcodec_free_context(&codecContext);
+        avformat_close_input(&formatContext);
+        return;
+    }
+
+    av_image_fill_arrays(rgbFrame->data, rgbFrame->linesize, buffer, AV_PIX_FMT_RGB24,
+        codecContext->width, codecContext->height, 1);
+
+    struct SwsContext* swsContext = sws_getContext(codecContext->width, codecContext->height, codecContext->pix_fmt,
+        codecContext->width, codecContext->height, AV_PIX_FMT_RGB24,
+        SWS_BILINEAR, NULL, NULL, NULL);
+    if (!swsContext) {
+        printf("Failed to create swsContext\n");
+        av_freep(&buffer);
+        av_frame_free(&frame);
+        av_frame_free(&rgbFrame);
+        avcodec_free_context(&codecContext);
+        avformat_close_input(&formatContext);
+        return;
+    }
+
+    while (av_read_frame(formatContext, &packet) >= 0) {
+        if (packet.stream_index == videoStreamIndex) {
+            if (avcodec_send_packet(codecContext, &packet) == 0) {
+                while (avcodec_receive_frame(codecContext, frame) == 0) {
+                    sws_scale(swsContext, frame->data, frame->linesize, 0, codecContext->height,
+                        rgbFrame->data, rgbFrame->linesize);
+
+                    SDL_Texture* texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGB24,
+                        SDL_TEXTUREACCESS_STREAMING,
+                        codecContext->width, codecContext->height);
+                    if (!texture) {
+                        printf("Failed to create SDL texture: %s\n", SDL_GetError());
+                        continue; // Proceed with next frame
+                    }
+
+                    SDL_UpdateTexture(texture, NULL, rgbFrame->data[0], rgbFrame->linesize[0]);
+
+                    SDL_RenderClear(renderer);
+                    SDL_RenderCopy(renderer, texture, NULL, NULL);
+                    SDL_RenderPresent(renderer);
+
+                    SDL_DestroyTexture(texture);
+                    SDL_Delay(40);  // Adjust delay to match frame rate (frame rate is typically around 25-30 fps for videos)
+                }
+            }
+        }
+        av_packet_unref(&packet);
+    }
+
+    // Cleanup
+    sws_freeContext(swsContext);
+    av_freep(&buffer);
+    av_frame_free(&frame);
+    av_frame_free(&rgbFrame);
+    avcodec_free_context(&codecContext);
+    avformat_close_input(&formatContext);
+}
+
+
 
 
 void showMainMenu(SDL_Renderer* renderer, int* play) {
@@ -219,6 +609,37 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
+
+    // Load the static spike texture
+    SDL_Texture* staticspikeTexture = IMG_LoadTexture(renderer, "spike.png");
+    if (!staticspikeTexture) {
+        printf("Failed to load spike image! IMG_Error: %s\n", IMG_GetError());
+        SDL_DestroyRenderer(renderer);
+        SDL_Quit();
+        return 1;
+    }
+
+    // Load character image (single static image)
+    SDL_Texture* characterTexture = IMG_LoadTexture(renderer, "character.png");
+    if (!characterTexture) {
+        printf("Failed to load character image! IMG_Error: %s\n", IMG_GetError());
+        SDL_DestroyRenderer(renderer);
+        SDL_Quit();
+        return 1;
+    }
+
+    // Load the spike texture
+    SDL_Texture* spikeTexture = IMG_LoadTexture(renderer, "movingspike.png");
+    if (!spikeTexture) {
+        printf("Failed to load spike image! IMG_Error: %s\n", IMG_GetError());
+        SDL_DestroyRenderer(renderer);
+        SDL_Quit();
+        return 1;
+    }
+    // Play intro video before menu
+    playIntroVideo(renderer);
+
+
     int play = 0;
     showMainMenu(renderer, &play);  // Display the main menu
     if (!play) {
@@ -230,6 +651,7 @@ int main(int argc, char* argv[]) {
         SDL_Quit();
         return 0;
     }
+    playcutscenehard(renderer);
 
     //int level = 1;
     float squareSize = 50.0f, squareX = 160.0f, squareY = 100.0f, speed = 0.1f;
@@ -351,17 +773,16 @@ int main(int argc, char* argv[]) {
 
 
 
-            // Draw the squares
-            SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-            SDL_RenderFillRect(renderer, &square);
-            SDL_RenderFillRect(renderer, &square2);
 
-            // Draw the red boxes
-            SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-            SDL_RenderFillRect(renderer, &redBox);
-            SDL_RenderFillRect(renderer, &redBox2);
-            SDL_RenderFillRect(renderer, &redBoxr);
-            SDL_RenderFillRect(renderer, &redBox2r);
+                        // Draw the character (use the single static character image)
+            SDL_RenderCopy(renderer, characterTexture, NULL, &square);
+            SDL_RenderCopy(renderer, characterTexture, NULL, &square2);
+
+
+            SDL_RenderCopy(renderer, spikeTexture, NULL, &redBox);
+            SDL_RenderCopy(renderer, spikeTexture, NULL, &redBox2);
+            SDL_RenderCopy(renderer, staticspikeTexture, NULL, &redBoxr);
+            SDL_RenderCopy(renderer, staticspikeTexture, NULL, &redBox2r);
 
 
             SDL_RenderPresent(renderer);
@@ -376,6 +797,9 @@ int main(int argc, char* argv[]) {
     SDL_DestroyTexture(bgTexture);
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
+    SDL_DestroyTexture(spikeTexture);
+    SDL_DestroyTexture(staticspikeTexture);
+    SDL_DestroyTexture(characterTexture);
     IMG_Quit(); // Quit SDL_image
     SDL_Quit();
     return 0;

@@ -1,5 +1,6 @@
 #include <SDL.h>
 #include <stdio.h>
+#include <SDL_image.h> 
 #include "level5.h"
 #include <math.h> // Include math library for sin and cos functions
 
@@ -12,12 +13,12 @@ int runLevel4(SDL_Renderer* renderer) {
     SDL_Delay(1000);
 
     // Define sizes and positions for the squares and red boxes in level 2
-    float redBoxSize = 30.0f, redBoxY = 290.0, redBoxX = 340.0f;
+    float redBoxSize = 30.0f, redBoxY = 280.0, redBoxX = 340.0f;
     int blinkTimer = 0;
     int showRedBox = 1; // Visibility toggle for blinking
 
-    float redBoxWidth2 = 256.0f, redBoxHeight2 = 30, redBoxX2 = 0.0f, redBoxY2 = 190.0f;
-    float redBoxX3 = 400.0f, redBoxY3 = 290.0f, redBoxSizeWidth3 = 240.0f, redBoxSizeHeight3 = 30.0f;
+    float redBoxWidth2 = 256.0f, redBoxHeight2 = 20.0, redBoxX2 = 0.0f, redBoxY2 = 190.0f;
+    float redBoxX3 = 400.0f, redBoxY3 = 290.0f, redBoxSizeWidth3 = 240.0f, redBoxSizeHeight3 = 20.0f;
     float redBoxX4 = 0.0f, redBoxY4 = 430.0, redBoxSpeed4 = 0.2f;
     int redBoxDirection = 1;
 
@@ -43,6 +44,40 @@ int runLevel4(SDL_Renderer* renderer) {
         SDL_DestroyRenderer(renderer);
         SDL_Quit();
         return;
+    }
+    // Load character image (single static image)
+    SDL_Texture* characterTexture = IMG_LoadTexture(renderer, "character.png");
+    if (!characterTexture) {
+        printf("Failed to load character image! IMG_Error: %s\n", IMG_GetError());
+        SDL_DestroyRenderer(renderer);
+        SDL_Quit();
+        return 1;
+    }
+
+    // Load the spike texture
+    SDL_Texture* spikeTexture = IMG_LoadTexture(renderer, "movingspike.png");
+    if (!spikeTexture) {
+        printf("Failed to load spike image! IMG_Error: %s\n", IMG_GetError());
+        SDL_DestroyRenderer(renderer);
+        SDL_Quit();
+        return 1;
+    }
+
+    // Load the laser texture
+    SDL_Texture* laser = IMG_LoadTexture(renderer, "laser1.png");
+    if (!laser) {
+        printf("Failed to load spike image! IMG_Error: %s\n", IMG_GetError());
+        SDL_DestroyRenderer(renderer);
+        SDL_Quit();
+        return 1;
+    }
+    // Load the blinking spike texture
+    SDL_Texture* blinkingspike = IMG_LoadTexture(renderer, "spike.png");
+    if (!blinkingspike) {
+        printf("Failed to load spike image! IMG_Error: %s\n", IMG_GetError());
+        SDL_DestroyRenderer(renderer);
+        SDL_Quit();
+        return 1;
     }
 
     int running = 1;
@@ -126,23 +161,30 @@ int runLevel4(SDL_Renderer* renderer) {
         // Render background and game objects
         SDL_RenderCopy(renderer, bgTexture, NULL, NULL);
 
-        // Draw squares
-        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-        SDL_RenderFillRect(renderer, &square);
-        SDL_RenderFillRect(renderer, &square2);
+        // Draw the character (use the single static character image)
+        SDL_RenderCopy(renderer, characterTexture, NULL, &square);
+        SDL_RenderCopy(renderer, characterTexture, NULL, &square2);
+
+        
+        SDL_RenderCopy(renderer, laser, NULL, &redBox2);
+        SDL_RenderCopy(renderer, laser, NULL, &redBox3);
+         SDL_RenderCopy(renderer, spikeTexture, NULL, &redBox4);
+
 
         // Draw red boxes
         SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
         if (showRedBox) {
-            SDL_RenderFillRect(renderer, &redBox); // Blinking red box
+            SDL_RenderCopy(renderer, blinkingspike, NULL, &redBox); // Blinking red box
         }
-        SDL_RenderFillRect(renderer, &redBox2);
-        SDL_RenderFillRect(renderer, &redBox3);
-        SDL_RenderFillRect(renderer, &redBox4);
 
         SDL_RenderPresent(renderer);
     }
 
     // Clean up resources
+    SDL_DestroyTexture(spikeTexture);
+    SDL_DestroyTexture(characterTexture);
+    SDL_DestroyTexture(blinkingspike);
+    SDL_DestroyTexture(laser);
     SDL_DestroyTexture(bgTexture);
+    IMG_Quit();
 }
