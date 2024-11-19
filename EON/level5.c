@@ -15,8 +15,10 @@ typedef struct {
 int checkCollision(SDL_Rect a, SDL_Rect b);
 void showRestartMessage(SDL_Renderer* renderer);
 
+
 int runLevel5(SDL_Renderer* renderer) {
     SDL_Delay(1000);
+    playbullethard(renderer);
 
     // Start time to track the duration
     Uint32 startTime = SDL_GetTicks();
@@ -131,7 +133,7 @@ int runLevel5(SDL_Renderer* renderer) {
         SDL_Rect square = { (int)squareX, (int)squareY, (int)squareSize, (int)squareSize };
         SDL_Rect square2 = { (int)square2X, (int)square2Y, (int)squareSize, (int)squareSize };
 
-        // Projectile launching logic every 4000 frames
+        // Projectile launching logic every 3000 frames
         frameCounter++;
         if (frameCounter >= 3000) {
             frameCounter = 0;
@@ -177,16 +179,24 @@ int runLevel5(SDL_Renderer* renderer) {
 
         SDL_Rect redbox2 = { (int)redBoxX2, (int)redBoxY2, (int)redboxwidth2, (int)redboxheight2 };
         SDL_Rect redBox = { (int)redBoxX, (int)redBoxY, (int)redBoxSize, (int)redBoxSize };
+        SDL_Rect finishLineR = { 340, 482, 300, 119 };
+        SDL_Rect finishLineL = { 0, 482, 320, 119 };
 
         // Collision detection with visible redbox2
         if (redbox2Visible && (checkCollision(square, redbox2) || checkCollision(square2, redbox2))) {
             return 1;
         }
 
-        // Move red boxes
+        // Move red boxe
         redBoxX += redboxdirection * redboxspeed;
         if (redBoxX <= 0) redboxdirection = 1;
         else if (redBoxX >= 640 - redBoxSize) redboxdirection = -1;
+
+        if (checkCollision(square2, finishLineR)) {
+            playending(renderer);
+            SDL_Quit(); 
+            exit(0);
+        }
 
         // Render background and game objects
         SDL_RenderCopy(renderer, bgTexture, NULL, NULL);

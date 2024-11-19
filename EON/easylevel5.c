@@ -16,6 +16,7 @@ int checkCollision(SDL_Rect a, SDL_Rect b);
 
 int runel5(SDL_Renderer* renderer) {
     SDL_Delay(1000);  // Initial delay
+    playbulletez(renderer);
 
     // Start time to track the duration
     Uint32 startTime = SDL_GetTicks();
@@ -145,7 +146,12 @@ int runel5(SDL_Renderer* renderer) {
                 return 1;  // End level if the player collides with the laser
             }
         }
-
+        SDL_Rect finishline = { 0, 482, 640, 119 };
+        if (checkCollision(square, finishline)) {
+            playending(renderer);
+            SDL_Quit();
+            exit(0);
+        }
         // Render background and game objects
         SDL_RenderCopy(renderer, bgTexture, NULL, NULL);
 
@@ -168,6 +174,8 @@ int runel5(SDL_Renderer* renderer) {
         turretX += turretdirection * turretspeed;
         if (turretX <= 0) turretdirection = 1;
         else if (turretX >= 640 - turretSize) turretdirection = -1;
+
+
         // Render the laser if it's active
         if (laserActive) {
             SDL_Rect laserRect = { 10, 400, 640, 20 };  // Laser position and size

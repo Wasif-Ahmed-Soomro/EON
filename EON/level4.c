@@ -152,7 +152,7 @@ int runLevel4(SDL_Renderer* renderer) {
             return 1;
         }
         if (checkCollision(square2, finishLineR)) {
-            int level5Status = runLevel5(renderer);  // Run level 2 and check for collision
+            int level5Status = runLevel5(renderer);  // Run level 5 and check for collision
             if (level5Status == 1) {
                 return 1;
             }
