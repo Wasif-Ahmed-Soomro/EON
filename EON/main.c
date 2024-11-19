@@ -255,7 +255,10 @@ void playcutscenehard(SDL_Renderer* renderer) {
         return;
     }
 
-    while (av_read_frame(formatContext, &packet) >= 0) {
+    SDL_Event event;
+    int skipCutscene = 0;  // Flag to track if Enter was pressed to skip the cutscene
+
+    while (av_read_frame(formatContext, &packet) >= 0 && !skipCutscene) {
         if (packet.stream_index == videoStreamIndex) {
             if (avcodec_send_packet(codecContext, &packet) == 0) {
                 while (avcodec_receive_frame(codecContext, frame) == 0) {
@@ -267,7 +270,7 @@ void playcutscenehard(SDL_Renderer* renderer) {
                         codecContext->width, codecContext->height);
                     if (!texture) {
                         printf("Failed to create SDL texture: %s\n", SDL_GetError());
-                        continue; // Proceed with next frame
+                        continue;  // Proceed with next frame
                     }
 
                     SDL_UpdateTexture(texture, NULL, rgbFrame->data[0], rgbFrame->linesize[0]);
@@ -277,7 +280,20 @@ void playcutscenehard(SDL_Renderer* renderer) {
                     SDL_RenderPresent(renderer);
 
                     SDL_DestroyTexture(texture);
+
                     SDL_Delay(40);  // Adjust delay to match frame rate (frame rate is typically around 25-30 fps for videos)
+
+                    // Poll for events to check if the user pressed Enter to skip the cutscene
+                    while (SDL_PollEvent(&event)) {
+                        if (event.type == SDL_QUIT) {
+                            skipCutscene = 1;  // Exit if the window is closed
+                        }
+                        if (event.type == SDL_KEYDOWN) {
+                            if (event.key.keysym.sym == SDLK_RETURN) {
+                                skipCutscene = 1;  // Skip the cutscene if Enter is pressed
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -292,6 +308,7 @@ void playcutscenehard(SDL_Renderer* renderer) {
     avcodec_free_context(&codecContext);
     avformat_close_input(&formatContext);
 }
+
 
 void playending(SDL_Renderer* renderer) {
     // Initialize FFmpeg
@@ -512,7 +529,10 @@ void playcutsceneez(SDL_Renderer* renderer) {
         return;
     }
 
-    while (av_read_frame(formatContext, &packet) >= 0) {
+    SDL_Event event;
+    int skipCutscene = 0;  // Flag to track if Enter was pressed to skip the cutscene
+
+    while (av_read_frame(formatContext, &packet) >= 0 && !skipCutscene) {
         if (packet.stream_index == videoStreamIndex) {
             if (avcodec_send_packet(codecContext, &packet) == 0) {
                 while (avcodec_receive_frame(codecContext, frame) == 0) {
@@ -524,7 +544,7 @@ void playcutsceneez(SDL_Renderer* renderer) {
                         codecContext->width, codecContext->height);
                     if (!texture) {
                         printf("Failed to create SDL texture: %s\n", SDL_GetError());
-                        continue; // Proceed with next frame
+                        continue;  // Proceed with next frame
                     }
 
                     SDL_UpdateTexture(texture, NULL, rgbFrame->data[0], rgbFrame->linesize[0]);
@@ -534,7 +554,20 @@ void playcutsceneez(SDL_Renderer* renderer) {
                     SDL_RenderPresent(renderer);
 
                     SDL_DestroyTexture(texture);
+
                     SDL_Delay(40);  // Adjust delay to match frame rate (frame rate is typically around 25-30 fps for videos)
+
+                    // Poll for events to check if the user pressed Enter to skip the cutscene
+                    while (SDL_PollEvent(&event)) {
+                        if (event.type == SDL_QUIT) {
+                            skipCutscene = 1;  // Exit if the window is closed
+                        }
+                        if (event.type == SDL_KEYDOWN) {
+                            if (event.key.keysym.sym == SDLK_RETURN) {
+                                skipCutscene = 1;  // Skip the cutscene if Enter is pressed
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -549,6 +582,7 @@ void playcutsceneez(SDL_Renderer* renderer) {
     avcodec_free_context(&codecContext);
     avformat_close_input(&formatContext);
 }
+
 
 void playbullethard(SDL_Renderer* renderer) {
     // Initialize FFmpeg
