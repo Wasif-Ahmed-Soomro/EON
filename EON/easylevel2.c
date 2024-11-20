@@ -102,12 +102,12 @@ int runel2(SDL_Renderer* renderer) {
         if (redBoxX <= 0) redBoxDirection = 1;
         else if (redBoxX >= 640 - redBoxSize) redBoxDirection = -1;
 
-        // Update the gap position
+        // Update the gap(obi) position
         gapX += gapDirection * gapSpeed;
         if (gapX <= 0) gapDirection = 1;
         else if (gapX >= 640 - gapWidth) gapDirection = -1;
 
-        // Define rectangles for the moving spike (red box) and the gap
+        // Define rectangles for the moving spike and lava(red box) and the gap(obi) 
         SDL_Rect finishline = { 0, 482, 640, 119 };
         SDL_Rect spike = { (int)redBoxX, (int)redBoxY, (int)redBoxSize, (int)redBoxSize };
         SDL_Rect redBox = { 0, 274, 640, (int)redBoxHeight };
@@ -116,10 +116,10 @@ int runel2(SDL_Renderer* renderer) {
 
         // Check for collisions (player must not collide with the red box unless within the gap)
         if (checkCollision(character, redBox)  && !checkCollision(character, gap) || checkCollision(character,spike)) {
-            return 1; // Player collided with the red box (spike)
+            return 1; // Player collided 
         }
         if (checkCollision(character, finishline)) {
-            int el3status = runel3(renderer);  // Run level 2 and check for collision
+            int el3status = runel3(renderer);  // Run level 3 when reache finish line
             if (el3status == 1) {
                 return 1;
             }
@@ -143,9 +143,9 @@ int runel2(SDL_Renderer* renderer) {
 
     // Clean up resources
     SDL_DestroyTexture(bgTexture);
-    SDL_DestroyTexture(obiTexture); // Destroy the obi texture
-    SDL_DestroyTexture(spikeTexture); // Destroy the moving spike texture
-    SDL_DestroyTexture(characterTexture); // Destroy the character texture
+    SDL_DestroyTexture(obiTexture); 
+    SDL_DestroyTexture(spikeTexture); 
+    SDL_DestroyTexture(characterTexture); 
     IMG_Quit();
     return 0;
 }

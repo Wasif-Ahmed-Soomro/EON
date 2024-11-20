@@ -150,7 +150,7 @@ void playIntroVideo(SDL_Renderer* renderer) {
                     SDL_RenderPresent(renderer);
 
                     SDL_DestroyTexture(texture);
-                    SDL_Delay(40);  // Adjust delay to match frame rate (frame rate is typically around 25-30 fps for videos)
+                    SDL_Delay(40);  //  delay to match frame rate 
                 }
             }
         }
@@ -167,7 +167,7 @@ void playIntroVideo(SDL_Renderer* renderer) {
 }
 
 void playcutscenehard(SDL_Renderer* renderer) {
-    // Initialize FFmpeg
+    // Initialize ffmpeg
     avformat_network_init();
     AVFormatContext* formatContext = NULL;
 
@@ -283,7 +283,7 @@ void playcutscenehard(SDL_Renderer* renderer) {
 
                     SDL_DestroyTexture(texture);
 
-                    SDL_Delay(40);  // Adjust delay to match frame rate (frame rate is typically around 25-30 fps for videos)
+                    SDL_Delay(40); 
 
                     // Poll for events to check if the user pressed Enter to skip the cutscene
                     while (SDL_PollEvent(&event)) {
@@ -313,7 +313,6 @@ void playcutscenehard(SDL_Renderer* renderer) {
 
 
 void playending(SDL_Renderer* renderer) {
-    // Initialize FFmpeg
     avformat_network_init();
     AVFormatContext* formatContext = NULL;
 
@@ -425,7 +424,7 @@ void playending(SDL_Renderer* renderer) {
                     SDL_RenderPresent(renderer);
 
                     SDL_DestroyTexture(texture);
-                    SDL_Delay(40);  // Adjust delay to match frame rate (frame rate is typically around 25-30 fps for videos)
+                    SDL_Delay(40);  
                 }
             }
         }
@@ -441,7 +440,6 @@ void playending(SDL_Renderer* renderer) {
     avformat_close_input(&formatContext);
 }
 void playcutsceneez(SDL_Renderer* renderer) {
-    // Initialize FFmpeg
     avformat_network_init();
     AVFormatContext* formatContext = NULL;
 
@@ -532,7 +530,7 @@ void playcutsceneez(SDL_Renderer* renderer) {
     }
 
     SDL_Event event;
-    int skipCutscene = 0;  // Flag to track if Enter was pressed to skip the cutscene
+    int skipCutscene = 0;  // Flag to track if Enter was pressed 
 
     while (av_read_frame(formatContext, &packet) >= 0 && !skipCutscene) {
         if (packet.stream_index == videoStreamIndex) {
@@ -546,7 +544,7 @@ void playcutsceneez(SDL_Renderer* renderer) {
                         codecContext->width, codecContext->height);
                     if (!texture) {
                         printf("Failed to create SDL texture: %s\n", SDL_GetError());
-                        continue;  // Proceed with next frame
+                        continue;  
                     }
 
                     SDL_UpdateTexture(texture, NULL, rgbFrame->data[0], rgbFrame->linesize[0]);
@@ -557,9 +555,9 @@ void playcutsceneez(SDL_Renderer* renderer) {
 
                     SDL_DestroyTexture(texture);
 
-                    SDL_Delay(40);  // Adjust delay to match frame rate (frame rate is typically around 25-30 fps for videos)
+                    SDL_Delay(40);  
 
-                    // Poll for events to check if the user pressed Enter to skip the cutscene
+                    // Poll for events to check 
                     while (SDL_PollEvent(&event)) {
                         if (event.type == SDL_QUIT) {
                             skipCutscene = 1;  // Exit if the window is closed
@@ -587,7 +585,6 @@ void playcutsceneez(SDL_Renderer* renderer) {
 
 
 void playbullethard(SDL_Renderer* renderer) {
-    // Initialize FFmpeg
     avformat_network_init();
     AVFormatContext* formatContext = NULL;
 
@@ -716,7 +713,6 @@ void playbullethard(SDL_Renderer* renderer) {
 }
 
 void playbulletez(SDL_Renderer* renderer) {
-    // Initialize FFmpeg
     avformat_network_init();
     AVFormatContext* formatContext = NULL;
 
@@ -818,7 +814,7 @@ void playbulletez(SDL_Renderer* renderer) {
                         codecContext->width, codecContext->height);
                     if (!texture) {
                         printf("Failed to create SDL texture: %s\n", SDL_GetError());
-                        continue; // Proceed with next frame
+                        continue; 
                     }
 
                     SDL_UpdateTexture(texture, NULL, rgbFrame->data[0], rgbFrame->linesize[0]);
@@ -828,7 +824,7 @@ void playbulletez(SDL_Renderer* renderer) {
                     SDL_RenderPresent(renderer);
 
                     SDL_DestroyTexture(texture);
-                    SDL_Delay(40);  // Adjust delay to match frame rate (frame rate is typically around 25-30 fps for videos)
+                    SDL_Delay(40);  
                 }
             }
         }
@@ -862,12 +858,12 @@ void showMainMenu(SDL_Renderer* renderer, int* play) {
         return;
     }
 
-    // Original button sizes
+    // Original button 
     SDL_Rect playButton = { 220, 180, 250, 100 };
     SDL_Rect quitButton = { 220, 320, 250, 100 };
     SDL_Rect bgRect = { 0, 0, 640, 600 };
 
-    // Enlarged versions of buttons for hover effect
+    // buttons for hover effect
     SDL_Rect enlargedPlayButton = { playButton.x - 10, playButton.y - 5, playButton.w + 20, playButton.h + 10 };
     SDL_Rect enlargedQuitButton = { quitButton.x - 10, quitButton.y - 5, quitButton.w + 20, quitButton.h + 10 };
 
@@ -878,19 +874,19 @@ void showMainMenu(SDL_Renderer* renderer, int* play) {
         int x, y;
         SDL_GetMouseState(&x, &y);
 
-        // Check if mouse is hovering over the play button and render the enlarged version if it is
+        // Check if mouse is hovering over the play button 
         if (x >= playButton.x && x <= playButton.x + playButton.w &&
             y >= playButton.y && y <= playButton.y + playButton.h) {
-            SDL_RenderCopy(renderer, playTexture, NULL, &enlargedPlayButton); // Render enlarged play button
+            SDL_RenderCopy(renderer, playTexture, NULL, &enlargedPlayButton); // Render hovered play button
         }
         else {
             SDL_RenderCopy(renderer, playTexture, NULL, &playButton); // Render normal play button
         }
 
-        // Check if mouse is hovering over the quit button and render the enlarged version if it is
+        // Check if mouse is hovering over the quit button 
         if (x >= quitButton.x && x <= quitButton.x + quitButton.w &&
             y >= quitButton.y && y <= quitButton.y + quitButton.h) {
-            SDL_RenderCopy(renderer, quitTexture, NULL, &enlargedQuitButton); // Render enlarged quit button
+            SDL_RenderCopy(renderer, quitTexture, NULL, &enlargedQuitButton); // Render hovered quit button
         }
         else {
             SDL_RenderCopy(renderer, quitTexture, NULL, &quitButton); // Render normal quit button
@@ -907,7 +903,7 @@ void showMainMenu(SDL_Renderer* renderer, int* play) {
                 SDL_GetMouseState(&x, &y);
                 if (x >= playButton.x && x <= playButton.x + playButton.w &&
                     y >= playButton.y && y <= playButton.y + playButton.h) {
-                    showModeSelectionMenu(renderer, play);  // Show mode selection instead of starting game
+                    showModeSelectionMenu(renderer, play);  // Show mode selection 
                     menuRunning = 0;
                 }
                 else if (x >= quitButton.x && x <= quitButton.x + quitButton.w &&
@@ -947,7 +943,7 @@ int showModeSelectionMenu(SDL_Renderer* renderer, int* startGame) {
     SDL_Rect startGameButton = { 220, 320, 250, 100 };
     SDL_Rect bgRect = { 0, 0, 640, 600 };
 
-    // Enlarged versions of buttons for hover effect
+    //  hover effect
     SDL_Rect enlargedEasyModeButton = { easyModeButton.x - 10, easyModeButton.y - 5, easyModeButton.w + 20, easyModeButton.h + 10 };
     SDL_Rect enlargedStartGameButton = { startGameButton.x - 10, startGameButton.y - 5, startGameButton.w + 20, startGameButton.h + 10 };
 
@@ -958,22 +954,22 @@ int showModeSelectionMenu(SDL_Renderer* renderer, int* startGame) {
         int x, y;
         SDL_GetMouseState(&x, &y);
 
-        // Check if mouse is hovering over the easy mode button and render the enlarged version if it is
+        // Check if mouse is hovering over the easy mode button 
         if (x >= easyModeButton.x && x <= easyModeButton.x + easyModeButton.w &&
             y >= easyModeButton.y && y <= easyModeButton.y + easyModeButton.h) {
-            SDL_RenderCopy(renderer, easyModeTexture, NULL, &enlargedEasyModeButton); // Render enlarged easy mode button
+            SDL_RenderCopy(renderer, easyModeTexture, NULL, &enlargedEasyModeButton); 
         }
         else {
             SDL_RenderCopy(renderer, easyModeTexture, NULL, &easyModeButton); // Render normal easy mode button
         }
 
-        // Check if mouse is hovering over the start game button and render the enlarged version if it is
+        // Check if mouse is hovering over the start game button 
         if (x >= startGameButton.x && x <= startGameButton.x + startGameButton.w &&
             y >= startGameButton.y && y <= startGameButton.y + startGameButton.h) {
-            SDL_RenderCopy(renderer, startGameTexture, NULL, &enlargedStartGameButton); // Render enlarged start game button
+            SDL_RenderCopy(renderer, startGameTexture, NULL, &enlargedStartGameButton); 
         }
         else {
-            SDL_RenderCopy(renderer, startGameTexture, NULL, &startGameButton); // Render normal start game button
+            SDL_RenderCopy(renderer, startGameTexture, NULL, &startGameButton); 
         }
 
         SDL_RenderPresent(renderer);
@@ -1054,7 +1050,7 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    // Load character image (single static image)
+    // Load character image 
     SDL_Texture* characterTexture = IMG_LoadTexture(renderer, "character.png");
     if (!characterTexture) {
         printf("Failed to load character image! IMG_Error: %s\n", IMG_GetError());
@@ -1063,7 +1059,7 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    // Load the spike texture
+    // Load the moving spike texture
     SDL_Texture* spikeTexture = IMG_LoadTexture(renderer, "movingspike.png");
     if (!spikeTexture) {
         printf("Failed to load spike image! IMG_Error: %s\n", IMG_GetError());
@@ -1071,14 +1067,14 @@ int main(int argc, char* argv[]) {
         SDL_Quit();
         return 1;
     }
-    // Play intro video before menu
+    // Play intro video
     playIntroVideo(renderer);
 
 
     int play = 0;
     showMainMenu(renderer, &play);  // Display the main menu
     if (!play) {
-        // Exit if "Quit" was selected
+        // Exit if Quit button was clicked
         SDL_DestroyTexture(bgTexture);
         SDL_DestroyRenderer(renderer);
         SDL_DestroyWindow(window);
@@ -1086,14 +1082,14 @@ int main(int argc, char* argv[]) {
         SDL_Quit();
         return 0;
     }
+    //play the cutscene (most amazing part acc to me :) )
     playcutscenehard(renderer);
 
-    //int level = 1;
+    //character squares
     float squareSize = 50.0f, squareX = 160.0f, squareY = 100.0f, speed = 0.1f;
     float square2Size = 50.0f, square2X = 460.0f, square2Y = 100.0f, speed2 = 0.1f;
 
-    // Initialize red boxes
-    //2nd moving
+    //2nd moving 
     float redBoxSize = 30.0f, redBoxX = 0.0f, redBoxY = 430.0f, redBoxSpeed = 0.1f;
     int redBoxDirection = -1;
     //first moving
@@ -1117,7 +1113,7 @@ int main(int argc, char* argv[]) {
 
     while (running) {
         Uint32 frameStart = SDL_GetTicks();
-        // Handle events
+        // Handle events for checking if user clicked the cross button of the window
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT) {
                 running = 0;
@@ -1141,6 +1137,9 @@ int main(int argc, char* argv[]) {
             const Uint8* currentKeyStates = SDL_GetKeyboardState(NULL);
             SDL_Rect square = { (int)squareX, (int)squareY, (int)squareSize, (int)squareSize };
             SDL_Rect square2 = { (int)square2X, (int)square2Y, (int)square2Size, (int)square2Size };
+
+
+            // make the middle wall
             SDL_Rect wall = { wallx, wally, wallwidth, wallheight };
 
             // Move the first square (WASD keys)
@@ -1157,7 +1156,7 @@ int main(int argc, char* argv[]) {
                 squareX += speed;  // Move right
             }
 
-            // Move the second square (Arrow keys)
+            // Move the second square (WASD keys)
             if (currentKeyStates[SDL_SCANCODE_W] && square2Y > 0) {
                 square2Y -= speed;  // Move up
             }
@@ -1171,7 +1170,7 @@ int main(int argc, char* argv[]) {
                 square2X += speed;  // Move right
             }
 
-            // Move the red boxes horizontally for left wall
+            // move the red boxes horizontally 
             //last box
             redBoxX += redBoxDirection * redBoxSpeed;
             if (redBoxX <= 0) redBoxDirection = 1;
@@ -1182,17 +1181,18 @@ int main(int argc, char* argv[]) {
             if (redBoxX2 <= 0) redBoxDirection2 = 1;
             else if (redBoxX2 >= 320 - redBoxSize2) redBoxDirection2 = -1;
 
-            // Check for collisions
+           
             SDL_Rect redBox = { (int)redBoxX, (int)redBoxY, (int)redBoxSize, (int)redBoxSize };
             SDL_Rect redBox2 = { (int)redBoxX2, (int)redBoxY2, (int)redBoxSize2, (int)redBoxSize2 };
             SDL_Rect redBoxr = { (int)redBoxXr, (int)redBoxYr, (int)redBoxSizer, (int)redBoxSizer };
             SDL_Rect redBox2r = { (int)redBoxX2r, (int)redBoxY2r, (int)redBoxSize2r, (int)redBoxSize2r };
 
+            // check for collisions
             if (checkCollision(square, redBox) || checkCollision(square, redBox2) || checkCollision(square2, redBoxr) || checkCollision(square2, redBox2r)) {
                 gameOver = 1;
             }
 
-
+            // if reached finishline proceed to next level
             if (checkCollision(square2, finishLineR)) {
                 int level2status = runLevel2(renderer);
                 if (level2status == 1) {
@@ -1205,12 +1205,12 @@ int main(int argc, char* argv[]) {
             // Clear the window and render the background
             SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
             SDL_RenderClear(renderer);
-            SDL_RenderCopy(renderer, bgTexture, NULL, NULL); // Render the background texture
+            SDL_RenderCopy(renderer, bgTexture, NULL, NULL); 
 
 
 
 
-                        // Draw the character (use the single static character image)
+            // draw the character 
             SDL_RenderCopy(renderer, characterTexture, NULL, &square);
             SDL_RenderCopy(renderer, characterTexture, NULL, &square2);
 
@@ -1222,18 +1222,18 @@ int main(int argc, char* argv[]) {
 
 
             SDL_RenderPresent(renderer);
-            // Cap the frame rate
+            // cap the frame rate
             capFPS(frameStart, FRAME_DELAY);
             
 
         }
         else {
-            // Show restart message
+            // show restart message
             showRestartMessage(renderer);
         }
     }
 
-    // Cleanup
+    // cleanup
     SDL_DestroyTexture(bgTexture);
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
@@ -1241,7 +1241,7 @@ int main(int argc, char* argv[]) {
     SDL_DestroyTexture(staticspikeTexture);
     SDL_DestroyTexture(characterTexture);
     
-    IMG_Quit(); // Quit SDL_image
+    IMG_Quit(); 
     SDL_Quit();
     return 0;
 }

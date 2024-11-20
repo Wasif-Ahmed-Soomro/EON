@@ -7,9 +7,9 @@ int checkCollision(SDL_Rect a, SDL_Rect b);
 
 int runLevel2(SDL_Renderer* renderer) {
     SDL_Delay(1000);
-    // Define sizes for the squares in level 2
+    
 
-        // Initialize red boxes
+    // Initialize red boxes
     //last box
     float redBoxSize = 30.0f, redBoxX = 320.0f, redBoxY = 430.0f, redBoxSpeed = 0.08f;
     int redBoxDirection = -1;
@@ -22,8 +22,8 @@ int runLevel2(SDL_Renderer* renderer) {
     float redBoxX3 = 200.0f, redBoxY3 = 250.0f, redBoxSpeed3 = 0.06f;
     int redBoxDirection3 = -1;
     float squareSize = 50.0f;
-    float squareX = 160.0f, squareY = 100.0f; // Position for the first square
-    float square2X = 460.0f, square2Y = 100.0f; // Position for the second square
+    float squareX = 160.0f, squareY = 100.0f; // Position for the first square (character)
+    float square2X = 460.0f, square2Y = 100.0f; // Position for the second square (character)
     float speed = 0.1f; // Speed of movement
     int wallx = 320, wally = 0, wallwidth = 20, wallheight = 600;
 
@@ -32,7 +32,7 @@ int runLevel2(SDL_Renderer* renderer) {
         printf("SDL_image could not initialize! IMG_Error: %s\n", IMG_GetError());
         SDL_DestroyRenderer(renderer);
         SDL_Quit();
-        return; // No need to return 1
+        return; 
     }
 
     // Load the background image
@@ -42,10 +42,10 @@ int runLevel2(SDL_Renderer* renderer) {
         SDL_DestroyRenderer(renderer);
         IMG_Quit();
         SDL_Quit();
-        return; // No need to return 1
+        return; 
     }
 
-    // Load character image (single static image)
+    // Load character image 
     SDL_Texture* characterTexture = IMG_LoadTexture(renderer, "character.png");
     if (!characterTexture) {
         printf("Failed to load character image! IMG_Error: %s\n", IMG_GetError());
@@ -54,7 +54,7 @@ int runLevel2(SDL_Renderer* renderer) {
         return 1;
     }
 
-    // Load the spike texture
+    // Load the moving spike texture
     SDL_Texture* spikeTexture = IMG_LoadTexture(renderer, "movingspike.png");
     if (!spikeTexture) {
         printf("Failed to load spike image! IMG_Error: %s\n", IMG_GetError());
@@ -63,7 +63,7 @@ int runLevel2(SDL_Renderer* renderer) {
         return 1;
     }
 
-    // Set up the game state for level 2
+    // Setup  for level 2
     int running = 1;
     SDL_Event event;
 
@@ -93,7 +93,7 @@ int runLevel2(SDL_Renderer* renderer) {
             squareX += speed;  // Move right
         }
 
-        // Move the second square (Arrow keys)
+        // Move the second square (WASD keys)
         if (currentKeyStates[SDL_SCANCODE_W] && square2Y > 0) {
             square2Y -= speed;  // Move up
         }
@@ -131,16 +131,18 @@ int runLevel2(SDL_Renderer* renderer) {
 
         SDL_Rect square = { (int)squareX, (int)squareY, (int)squareSize, (int)squareSize };
         SDL_Rect square2 = { (int)square2X, (int)square2Y, (int)squareSize, (int)squareSize };
-        // Define finish line rectangles
+        // define finish line rectangles
         SDL_Rect finishLineR = { 340, 482, 300, 119 };
         SDL_Rect finishLineL = { 0, 482, 320, 119 };
 
-        // Check for collisions
+        // Cceck for collisions
         if (checkCollision(square, redBox) || checkCollision(square2, redBox) ||
             checkCollision(square, redBox2) || checkCollision(square2, redBox2) ||
             checkCollision(square, redBox3) || checkCollision(square2, redBox3)) {
             return 1;
         }
+
+        // if reached finishline proceed to next level
 
         if (checkCollision(square2, finishLineR)) {
             int level3status = runLevel3(renderer);
@@ -155,7 +157,7 @@ int runLevel2(SDL_Renderer* renderer) {
 
 
 
-        // Draw the character (use the single static character image)
+        // Draw the character 
         SDL_RenderCopy(renderer, characterTexture, NULL, &square);
         SDL_RenderCopy(renderer, characterTexture, NULL, &square2);
 
@@ -167,7 +169,7 @@ int runLevel2(SDL_Renderer* renderer) {
 
 
 
-        // Add additional logic for level 2 (obstacles, goals, etc.) here
+
 
         SDL_RenderPresent(renderer);
     }

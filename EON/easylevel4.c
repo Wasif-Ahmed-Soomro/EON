@@ -147,13 +147,13 @@ int runel4(SDL_Renderer* renderer) {
         // Collision detection
         if (checkCollision(character, spike1Rect) ||
             checkCollision(character, laser1) || checkCollision(character, laser2)) {
-            return 1; // Player collided with one of the obstacles
+            return 1; // Player collided 
         }
         if (blinkvisible && (checkCollision(character, blinkSpike1) || checkCollision(character, blinkSpike2))) {
             return 1;
         }
         if (checkCollision(character, finishline)) {
-            int el5status = runel5(renderer);  // Run level 5 and check for collision
+            int el5status = runel5(renderer);  // Run level 5 
             if (el5status == 1) {
                 return 1;
             }

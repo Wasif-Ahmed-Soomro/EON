@@ -1,5 +1,5 @@
 #include <SDL.h>
-#include <SDL_image.h> // Include SDL_image
+#include <SDL_image.h> 
 #include <stdio.h>
 #include "easylevel2.h"
 
@@ -7,7 +7,7 @@ int checkCollision(SDL_Rect a, SDL_Rect b);
 void showRestartMessage(SDL_Renderer* renderer);
 
 int easyMode(SDL_Renderer* renderer) {
-    // Initialize SDL_image BEFORE loading images
+    
     if (!(IMG_Init(IMG_INIT_PNG | IMG_INIT_JPG | IMG_INIT_TIF))) {
         printf("SDL_image could not initialize! IMG_Error: %s\n", IMG_GetError());
         SDL_DestroyRenderer(renderer);
@@ -82,24 +82,24 @@ int easyMode(SDL_Renderer* renderer) {
             // Get the current state of the keyboard
             const Uint8* currentKeyStates = SDL_GetKeyboardState(NULL);
 
-            // Move the first square (WASD keys)
-            int isMoving = 0; // Flag to track if the player is moving
+            // Move the square(CHARCATER) (WASD keys)
+            
 
             if (currentKeyStates[SDL_SCANCODE_W] && squareY > 0) {
                 squareY -= speed;  // Move up
-                isMoving = 1;
+                
             }
             if (currentKeyStates[SDL_SCANCODE_S] && squareY < 600 - squareSize) {
                 squareY += speed;  // Move down
-                isMoving = 1;
+                
             }
             if (currentKeyStates[SDL_SCANCODE_A] && squareX > 0) {
                 squareX -= speed;  // Move left
-                isMoving = 1;
+                
             }
             if (currentKeyStates[SDL_SCANCODE_D] && squareX < 640 - squareSize) {
                 squareX += speed;  // Move right
-                isMoving = 1;
+                
             }
 
             // Update the spike positions
@@ -158,7 +158,7 @@ int easyMode(SDL_Renderer* renderer) {
     // Clean up resources
     SDL_DestroyTexture(bgTexture);
     SDL_DestroyTexture(spikeTexture);
-    SDL_DestroyTexture(characterTexture);  // Destroy the character texture
+    SDL_DestroyTexture(characterTexture); 
     IMG_Quit();
-    return 0;  // Ensure the return type matches the function signature
+    return 0;  
 }

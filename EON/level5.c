@@ -4,7 +4,7 @@
 #include <SDL_image.h> 
 #include <math.h>
 
-#define MAX_PROJECTILES 10 // Maximum number of active projectiles
+
 
 typedef struct {
     float x, y;           // Position of the projectile
@@ -41,7 +41,7 @@ int runLevel5(SDL_Renderer* renderer) {
     int wallx = 320, wally = 0, wallwidth = 20, wallheight = 600;
 
     // Projectile variables
-    Projectile projectiles[MAX_PROJECTILES] = { 0 }; // Array to hold multiple projectiles
+    Projectile projectiles[1] = { 0 }; // Array to hold multiple projectiles
     float projectileSpeed = 0.1f;
     int frameCounter = 0;
 
@@ -95,7 +95,7 @@ int runLevel5(SDL_Renderer* renderer) {
         // Calculate elapsed time
         Uint32 elapsedTime = SDL_GetTicks() - startTime;
 
-        // Hide redbox2 after 10 seconds (10000 milliseconds)
+        // Hide LASER after 10 seconds (10000 milliseconds)
         if (elapsedTime >= 10000) {
             redbox2Visible = 0;
         }
@@ -117,7 +117,7 @@ int runLevel5(SDL_Renderer* renderer) {
             squareX += speed;
         }
 
-        // Move the second square (Arrow keys)
+        // Move the second square (WASD keys)
         if (currentKeyStates[SDL_SCANCODE_W] && square2Y > 0) {
             square2Y -= speed;
         }
@@ -133,13 +133,13 @@ int runLevel5(SDL_Renderer* renderer) {
         SDL_Rect square = { (int)squareX, (int)squareY, (int)squareSize, (int)squareSize };
         SDL_Rect square2 = { (int)square2X, (int)square2Y, (int)squareSize, (int)squareSize };
 
-        // Projectile launching logic every 3000 frames
+        // bullets launching logic every 3000 frames
         frameCounter++;
         if (frameCounter >= 3000) {
             frameCounter = 0;
 
-            // Find an inactive projectile slot
-            for (int i = 0; i < MAX_PROJECTILES; i++) {
+            
+            for (int i = 0; i < 1; i++) {
                 if (!projectiles[i].active) {
                     projectiles[i].active = 1;
                     projectiles[i].x = redBoxX + redBoxSize / 2;
@@ -158,7 +158,7 @@ int runLevel5(SDL_Renderer* renderer) {
         }
 
         // Update projectile positions
-        for (int i = 0; i < MAX_PROJECTILES; i++) {
+        for (int i = 0; i < 1; i++) {
             if (projectiles[i].active) {
                 projectiles[i].x += projectiles[i].dirX * projectileSpeed;
                 projectiles[i].y += projectiles[i].dirY * projectileSpeed;
@@ -187,7 +187,7 @@ int runLevel5(SDL_Renderer* renderer) {
             return 1;
         }
 
-        // Move red boxe
+        // Move spikes 
         redBoxX += redboxdirection * redboxspeed;
         if (redBoxX <= 0) redboxdirection = 1;
         else if (redBoxX >= 640 - redBoxSize) redboxdirection = -1;
@@ -209,14 +209,14 @@ int runLevel5(SDL_Renderer* renderer) {
 
 
 
-        // Draw redbox2 if still visible
+        // Draw laser if still visible
         if (redbox2Visible) {
             SDL_RenderCopy(renderer, laser, NULL, &redbox2);
         }
 
         // Draw active projectiles
         SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
-        for (int i = 0; i < MAX_PROJECTILES; i++) {
+        for (int i = 0; i < 1; i++) {
             if (projectiles[i].active) {
                 SDL_Rect projectileRect = { (int)projectiles[i].x, (int)projectiles[i].y, 13, 13 };
                 SDL_RenderCopy(renderer, bulletTexture, NULL, &projectileRect);

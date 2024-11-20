@@ -22,9 +22,9 @@ int runel3(SDL_Renderer* renderer) {
 
     // Initial angles for each spike
     float spike1Angle = 0.0f;      // Spike 1
-    float spike2Angle = M_PI / 2;  // Spike 2 (90 degrees offset)
-    float spike3Angle = M_PI;      // Spike 3 (180 degrees offset)
-    float spike4Angle = 3 * M_PI / 2; // Spike 4 (270 degrees offset)
+    float spike2Angle = M_PI / 2;  // Spike 2 (90 degrees offset) (180/2)
+    float spike3Angle = M_PI;      // Spike 3 (180 degrees offset) 
+    float spike4Angle = 3 * M_PI / 2; // Spike 4 (270 degrees offset) (3x90)
 
     // Player movement speed and initial position
     float squareSize = 50.0f;
@@ -49,7 +49,7 @@ int runel3(SDL_Renderer* renderer) {
         return 1;
     }
 
-    // Load the spike image
+    // load the spike image
     SDL_Texture* spikeTexture = IMG_LoadTexture(renderer, "movingspike.png");
     if (!spikeTexture) {
         printf("Failed to load spike texture! IMG_Error: %s\n", IMG_GetError());
@@ -59,7 +59,7 @@ int runel3(SDL_Renderer* renderer) {
         return 1;
     }
 
-    // Load the player's character image
+    // load the player's character image
     SDL_Texture* characterTexture = IMG_LoadTexture(renderer, "character.png");
     if (!characterTexture) {
         printf("Failed to load character texture! IMG_Error: %s\n", IMG_GetError());
@@ -69,7 +69,7 @@ int runel3(SDL_Renderer* renderer) {
         return 1;
     }
 
-    // Load the laser image
+    // load the laser image
     SDL_Texture* laserTexture = IMG_LoadTexture(renderer, "laser.png");
     if (!laserTexture) {
         printf("Failed to load laser texture! IMG_Error: %s\n", IMG_GetError());
@@ -79,7 +79,7 @@ int runel3(SDL_Renderer* renderer) {
         return 1;
     }
 
-    // Set up the game state for level 3
+
     int running = 1;
     SDL_Event event;
 
@@ -116,17 +116,17 @@ int runel3(SDL_Renderer* renderer) {
         // Update spike 2's position based on circular motion
         float spike2X = centerX + spikeRadius * cos(spike2Angle) - spikeSize / 2;
         float spike2Y = centerY + spikeRadius * sin(spike2Angle) - spikeSize / 2;
-        spike2Angle += spikeSpeed; // Increment angle for circular motion
+        spike2Angle += spikeSpeed; 
 
         // Update spike 3's position based on circular motion
         float spike3X = centerX + spikeRadius * cos(spike3Angle) - spikeSize / 2;
         float spike3Y = centerY + spikeRadius * sin(spike3Angle) - spikeSize / 2;
-        spike3Angle += spikeSpeed; // Increment angle for circular motion
+        spike3Angle += spikeSpeed; 
 
         // Update spike 4's position based on circular motion
         float spike4X = centerX + spikeRadius * cos(spike4Angle) - spikeSize / 2;
         float spike4Y = centerY + spikeRadius * sin(spike4Angle) - spikeSize / 2;
-        spike4Angle += spikeSpeed; // Increment angle for circular motion
+        spike4Angle += spikeSpeed; 
 
         // Define rectangles for all spikes and finishline
         SDL_Rect finishline = { 0, 482, 640, 119 };
@@ -139,18 +139,18 @@ int runel3(SDL_Renderer* renderer) {
         SDL_Rect laser1 = { 0, 300, 220, 20 };
         SDL_Rect laser2 = { 420, 300, 220, 20 };
 
-        // Define rectangle for the player's character
+        // Define  the player's character
         SDL_Rect character = { (int)squareX, (int)squareY, (int)squareSize, (int)squareSize };
 
         // Check for collisions with any spike
         if (checkCollision(character, spike1Rect) || checkCollision(character, spike2Rect) ||
             checkCollision(character, spike3Rect) || checkCollision(character, spike4Rect) || 
             checkCollision(character, laser1) || checkCollision(character, laser2)) {
-            return 1; // Player collided with one of the spikes
+            return 1; // Player collided 
         }
 
         if (checkCollision(character, finishline)) {
-            int el4status = runel4(renderer);  // Run level 2 and check for collision
+            int el4status = runel4(renderer);  // Run level 4 when reached finsih line
             if (el4status == 1) {
                 return 1;
             }

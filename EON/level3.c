@@ -6,7 +6,7 @@ int checkCollision(SDL_Rect a, SDL_Rect b);
 
 int runLevel3(SDL_Renderer* renderer) {
     SDL_Delay(1000);
-    // Define sizes for the squares in level 3
+
 
         // Initialize red boxes
     float redBoxSize = 30.0f, redBoxX = 320.0f, redBoxY = 430.0f, redBoxSpeed = 0.1f;
@@ -33,7 +33,7 @@ int runLevel3(SDL_Renderer* renderer) {
         printf("SDL_image could not initialize! IMG_Error: %s\n", IMG_GetError());
         SDL_DestroyRenderer(renderer);
         SDL_Quit();
-        return; // No need to return 1
+        return; 
     }
 
     // Load the background image
@@ -43,9 +43,9 @@ int runLevel3(SDL_Renderer* renderer) {
         SDL_DestroyRenderer(renderer);
         IMG_Quit();
         SDL_Quit();
-        return; // No need to return 1
+        return; 
     }
-    // Load character image (single static image)
+    // Load character image 
     SDL_Texture* characterTexture = IMG_LoadTexture(renderer, "character.png");
     if (!characterTexture) {
         printf("Failed to load character image! IMG_Error: %s\n", IMG_GetError());
@@ -155,8 +155,10 @@ int runLevel3(SDL_Renderer* renderer) {
             checkCollision(square, redBox2) || checkCollision(square2, redBox2) ||
             checkCollision(square, redBox3) || checkCollision(square2, redBox3) ||
             checkCollision(square, redBox4) || checkCollision(square2, redBox4)) {
-            return 1; // Stop the game if there's a collision
+            return 1; 
         }
+
+        // if reached finishline proceed to next level
 
         if (checkCollision(square2, finishLineR)) {
             int level3status = runLevel4(renderer);
@@ -170,7 +172,7 @@ int runLevel3(SDL_Renderer* renderer) {
 
 
 
-        // Draw the character (use the single static character image)
+        // Draw the character 
         SDL_RenderCopy(renderer, characterTexture, NULL, &square);
         SDL_RenderCopy(renderer, characterTexture, NULL, &square2);
 
@@ -184,7 +186,7 @@ int runLevel3(SDL_Renderer* renderer) {
 
 
 
-        // Add additional logic for level 2 (obstacles, goals, etc.) here
+      
 
         SDL_RenderPresent(renderer);
 

@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <SDL_image.h> 
 #include "level5.h"
-#include <math.h> // Include math library for sin and cos functions
+#include <math.h> // for sin and cos functions
 
 #define PI 3.14159265
 
@@ -12,10 +12,9 @@ void showRestartMessage(SDL_Renderer* renderer);
 int runLevel4(SDL_Renderer* renderer) {
     SDL_Delay(1000);
 
-    // Define sizes and positions for the squares and red boxes in level 2
     float redBoxSize = 30.0f, redBoxY = 280.0, redBoxX = 340.0f;
     int blinkTimer = 0;
-    int showRedBox = 1; // Visibility toggle for blinking
+    int showRedBox = 1; // flag for blinking
 
     float redBoxWidth2 = 256.0f, redBoxHeight2 = 20.0, redBoxX2 = 0.0f, redBoxY2 = 190.0f;
     float redBoxX3 = 400.0f, redBoxY3 = 290.0f, redBoxSizeWidth3 = 240.0f, redBoxSizeHeight3 = 20.0f;
@@ -29,7 +28,7 @@ int runLevel4(SDL_Renderer* renderer) {
 
     int wallx = 320, wally = 0, wallwidth = 20, wallheight = 600;
 
-    // Load the background image as a BMP file (no SDL_image needed)
+    // Load the background image 
     SDL_Surface* bgSurface = SDL_LoadBMP("bg.bmp");
     if (!bgSurface) {
         printf("Failed to load BMP! SDL_Error: %s\n", SDL_GetError());
@@ -54,7 +53,7 @@ int runLevel4(SDL_Renderer* renderer) {
         return 1;
     }
 
-    // Load the spike texture
+    // Load the moving spike texture
     SDL_Texture* spikeTexture = IMG_LoadTexture(renderer, "movingspike.png");
     if (!spikeTexture) {
         printf("Failed to load spike image! IMG_Error: %s\n", IMG_GetError());
@@ -84,7 +83,7 @@ int runLevel4(SDL_Renderer* renderer) {
     SDL_Event event;
 
     while (running) {
-        // Handle events
+        
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT) {
                 running = 0;
@@ -108,7 +107,7 @@ int runLevel4(SDL_Renderer* renderer) {
             squareX += speed;
         }
 
-        // Move the second square (Arrow keys)
+        // Move the second square (WASD keys)
         if (currentKeyStates[SDL_SCANCODE_W] && square2Y > 0) {
             square2Y -= speed;
         }
@@ -121,7 +120,7 @@ int runLevel4(SDL_Renderer* renderer) {
         if (currentKeyStates[SDL_SCANCODE_D] && square2X < 640 - squareSize) {
             square2X += speed;
         }
-        // Move red boxes
+        
         redBoxX4 += redBoxDirection * redBoxSpeed4;
         if (redBoxX4 <= 0) redBoxDirection = 1;
         else if (redBoxX4 >= 260) redBoxDirection = -1;
@@ -151,8 +150,10 @@ int runLevel4(SDL_Renderer* renderer) {
             checkCollision(square, redBox3) || checkCollision(square2, redBox3)) {
             return 1;
         }
+
+        // if reached finishline proceed to next level
         if (checkCollision(square2, finishLineR)) {
-            int level5Status = runLevel5(renderer);  // Run level 5 and check for collision
+            int level5Status = runLevel5(renderer);  
             if (level5Status == 1) {
                 return 1;
             }
@@ -161,7 +162,7 @@ int runLevel4(SDL_Renderer* renderer) {
         // Render background and game objects
         SDL_RenderCopy(renderer, bgTexture, NULL, NULL);
 
-        // Draw the character (use the single static character image)
+        // Draw the character 
         SDL_RenderCopy(renderer, characterTexture, NULL, &square);
         SDL_RenderCopy(renderer, characterTexture, NULL, &square2);
 
@@ -171,7 +172,7 @@ int runLevel4(SDL_Renderer* renderer) {
          SDL_RenderCopy(renderer, spikeTexture, NULL, &redBox4);
 
 
-        // Draw red boxes
+
         SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
         if (showRedBox) {
             SDL_RenderCopy(renderer, blinkingspike, NULL, &redBox); // Blinking red box

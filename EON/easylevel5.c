@@ -1,9 +1,9 @@
 #include <SDL.h>
-#include <SDL_image.h>  // Include SDL_image
+#include <SDL_image.h>  
 #include <stdio.h>
 #include <math.h>
 
-#define MAX_PROJECTILES 10  // Maximum number of active projectiles
+
 
 typedef struct {
     float x, y;        // Position of the projectile
@@ -31,7 +31,7 @@ int runel5(SDL_Renderer* renderer) {
     float speed = 0.1f;
 
     // Projectile variables
-    Projectile projectiles[MAX_PROJECTILES] = { 0 };  // Array to hold multiple projectiles
+    Projectile projectiles[1] = { 0 };  // Array to hold multiple projectiles
     float projectileSpeed = 0.2f;  // Speed of the projectile
     int frameCounter = 0;  // To track frame count for firing projectiles
 
@@ -94,11 +94,12 @@ int runel5(SDL_Renderer* renderer) {
             frameCounter = 0;
 
             // Find an inactive projectile slot
-            for (int i = 0; i < MAX_PROJECTILES; i++) {
+            for (int i = 0; i < 1; i++) {
                 if (!projectiles[i].active) {
                     projectiles[i].active = 1;
-                    projectiles[i].x = turretX + turretSize / 2;  // Start projectile at the turret center
-                    projectiles[i].y = turretY + turretSize / 2;  // Start projectile at the turret center
+                    // Start projectile at the turret center
+                    projectiles[i].x = turretX + turretSize / 2;  
+                    projectiles[i].y = turretY + turretSize / 2; 
 
                     // Calculate direction towards the player square
                     float deltaX = squareX - projectiles[i].x;
@@ -113,7 +114,7 @@ int runel5(SDL_Renderer* renderer) {
         }
 
         // Update projectile positions
-        for (int i = 0; i < MAX_PROJECTILES; i++) {
+        for (int i = 0; i < 1; i++) {
             if (projectiles[i].active) {
                 projectiles[i].x += projectiles[i].dirX * projectileSpeed;
                 projectiles[i].y += projectiles[i].dirY * projectileSpeed;
@@ -162,8 +163,8 @@ int runel5(SDL_Renderer* renderer) {
         SDL_Rect turretRect = { (int)turretX, (int)turretY, (int)turretSize, (int)turretSize };
         SDL_RenderCopy(renderer, turretTexture, NULL, &turretRect);
 
-        // Draw active projectiles
-        for (int i = 0; i < MAX_PROJECTILES; i++) {
+        // Draw  projectile(BULLET)
+        for (int i = 0; i < 1; i++) {
             if (projectiles[i].active) {
                 SDL_Rect projectileRect = { (int)projectiles[i].x, (int)projectiles[i].y, 10, 10 };
                 SDL_RenderCopy(renderer, bulletTexture, NULL, &projectileRect);  // Use bullet texture
