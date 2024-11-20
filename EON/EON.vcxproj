@@ -138,6 +138,7 @@
     <ClCompile Include="easylevel4.c" />
     <ClCompile Include="easylevel5.c" />
     <ClCompile Include="easymode.c" />
+    <ClCompile Include="fps.c" />
     <ClCompile Include="level2.c" />
     <ClCompile Include="level3.c" />
     <ClCompile Include="level4.c" />
@@ -150,6 +151,7 @@
     <ClInclude Include="easylevel4.h" />
     <ClInclude Include="easylevel5.h" />
     <ClInclude Include="easyMode.h" />
+    <ClInclude Include="fps.h" />
     <ClInclude Include="level2.h" />
     <ClInclude Include="level3.h" />
     <ClInclude Include="level4.h" />

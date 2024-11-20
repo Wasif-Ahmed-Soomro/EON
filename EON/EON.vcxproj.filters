@@ -45,6 +45,9 @@
     <ClCompile Include="easylevel5.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="fps.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="level2.h">
@@ -72,6 +75,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="easylevel5.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fps.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

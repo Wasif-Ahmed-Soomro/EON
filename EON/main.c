@@ -1,12 +1,14 @@
 #include <SDL.h>
 #include <SDL_image.h>
 #include <stdio.h>
+#include "fps.h"
 #include <libavformat/avformat.h>
 #include <libavcodec/avcodec.h>
 #include <libswscale/swscale.h>
 #include "level2.h" // Make sure this file declares runLevel2
 #include "easyMode.h"
-
+#define FRAME_RATE 60
+#define FRAME_DELAY (1 / FRAME_RATE)  // milliseconds per frame
 int checkCollision(SDL_Rect a, SDL_Rect b) {
     return SDL_HasIntersection(&a, &b);
 }
@@ -1114,6 +1116,7 @@ int main(int argc, char* argv[]) {
     SDL_Rect finishLineL = { 0, 482, 320, 119 };
 
     while (running) {
+        Uint32 frameStart = SDL_GetTicks();
         // Handle events
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT) {
@@ -1219,6 +1222,10 @@ int main(int argc, char* argv[]) {
 
 
             SDL_RenderPresent(renderer);
+            // Cap the frame rate
+            capFPS(frameStart, FRAME_DELAY);
+            
+
         }
         else {
             // Show restart message
@@ -1233,6 +1240,7 @@ int main(int argc, char* argv[]) {
     SDL_DestroyTexture(spikeTexture);
     SDL_DestroyTexture(staticspikeTexture);
     SDL_DestroyTexture(characterTexture);
+    
     IMG_Quit(); // Quit SDL_image
     SDL_Quit();
     return 0;
